@@ -1,0 +1,111 @@
+
+> indno1.live@0.1.0 dev
+> next dev -p 5000 -H 0.0.0.0
+
+[1G[0K[1m[38;2;173;127;168m▲ Next.js 16.2.1[39m[22m (Turbopack)
+- Local:         http://localhost:5000
+- Network:       http://0.0.0.0:5000
+[32m[1m✓[22m[39m Ready in 357ms
+
+ GET / [32m200[39m in 2.5s[2m (next.js: 2.1s, application-code: 418ms)[22m
+ GET /admin/streams/1 [32m200[39m in 2.6s[2m (next.js: 2.4s, application-code: 137ms)[22m
+[36m[browser][39m [33mImage with src "https://e644ad59-1917-453e-96e3-9a3d80b364b0-00-jzr76bb5tcp6.sisko.replit.dev/images/logo1.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.[39m [2m(https://e644ad59-1917-453e-96e3-9a3d80b364b0-00-jzr76bb5tcp6.sisko.replit.dev/__replco/static/devtools/injected.js:37:27)[22m
+ GET /api/streams?sport=football [32m200[39m in 176ms[2m (next.js: 106ms, application-code: 70ms)[22m
+ GET /api/streams?sport=basketball [32m200[39m in 100ms[2m (next.js: 28ms, application-code: 72ms)[22m
+ GET /api/streams?sport=cricket [32m200[39m in 186ms[2m (next.js: 108ms, application-code: 78ms)[22m
+ GET /api/streams?live=true [32m200[39m in 99ms[2m (next.js: 19ms, application-code: 81ms)[22m
+ GET /api/auth/me [32m200[39m in 72ms[2m (next.js: 60ms, application-code: 12ms)[22m
+ GET /api/streams/1 [32m200[39m in 882ms[2m (next.js: 866ms, application-code: 16ms)[22m
+ GET /api/streams/1 [32m200[39m in 739ms[2m (next.js: 718ms, application-code: 22ms)[22m
+ GET /api/admin/streams/1/overlays [32m200[39m in 923ms[2m (next.js: 900ms, application-code: 23ms)[22m
+ GET / [32m200[39m in 83ms[2m (next.js: 4ms, application-code: 78ms)[22m
+ GET /api/streams/1 [32m200[39m in 66ms[2m (next.js: 45ms, application-code: 20ms)[22m
+ GET /api/streams/1 [32m200[39m in 81ms[2m (next.js: 70ms, application-code: 11ms)[22m
+ GET /api/streams/1 [32m200[39m in 74ms[2m (next.js: 66ms, application-code: 8ms)[22m
+ GET /api/streams?sport=football [32m200[39m in 42ms[2m (next.js: 12ms, application-code: 30ms)[22m
+ GET /api/streams?sport=basketball [32m200[39m in 42ms[2m (next.js: 17ms, application-code: 25ms)[22m
+ GET /api/streams?sport=cricket [32m200[39m in 53ms[2m (next.js: 41ms, application-code: 11ms)[22m
+ GET /api/streams?live=true [32m200[39m in 7ms[2m (next.js: 3ms, application-code: 4ms)[22m
+[36m[browser][39m [33mImage with src "http://localhost:5000/images/logo1.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.[39m
+ GET /api/streams/1 [32m200[39m in 113ms[2m (next.js: 81ms, application-code: 32ms)[22m
+ GET /api/streams/1 [32m200[39m in 77ms[2m (next.js: 6ms, application-code: 71ms)[22m
+ GET /api/streams/1 [32m200[39m in 79ms[2m (next.js: 64ms, application-code: 15ms)[22m
+ GET /api/streams/1 [32m200[39m in 10ms[2m (next.js: 3ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 46ms[2m (next.js: 41ms, application-code: 5ms)[22m
+ GET /api/streams/1 [32m200[39m in 61ms[2m (next.js: 54ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 59ms[2m (next.js: 52ms, application-code: 6ms)[22m
+ GET /api/streams/1 [32m200[39m in 49ms[2m (next.js: 42ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 77ms[2m (next.js: 66ms, application-code: 10ms)[22m
+ GET /api/streams/1 [32m200[39m in 73ms[2m (next.js: 65ms, application-code: 8ms)[22m
+ GET /watch/1 [32m200[39m in 843ms[2m (next.js: 617ms, application-code: 226ms)[22m
+[36m[browser][39m [33mImage with src "http://localhost:5000/images/logo1.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.[39m
+ GET /api/streams/1 [32m200[39m in 70ms[2m (next.js: 59ms, application-code: 11ms)[22m
+ GET /admin/streams/1 [32m200[39m in 241ms[2m (next.js: 153ms, application-code: 87ms)[22m
+[36m[browser][39m [33mImage with src "http://localhost:5000/images/logo1.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.[39m
+ GET /api/streams/1 [32m200[39m in 100ms[2m (next.js: 85ms, application-code: 15ms)[22m
+ GET /api/auth/me [33m401[39m in 13ms[2m (next.js: 7ms, application-code: 7ms)[22m
+ GET /api/admin/streams/1/overlays [33m401[39m in 101ms[2m (next.js: 81ms, application-code: 20ms)[22m
+ GET /api/streams/1 [32m200[39m in 119ms[2m (next.js: 6ms, application-code: 113ms)[22m
+ GET /admin/login [32m200[39m in 246ms[2m (next.js: 198ms, application-code: 48ms)[22m
+ GET /api/streams/1 [32m200[39m in 63ms[2m (next.js: 57ms, application-code: 6ms)[22m
+ GET /api/streams/1 [32m200[39m in 69ms[2m (next.js: 56ms, application-code: 13ms)[22m
+ GET /api/streams/1 [32m200[39m in 57ms[2m (next.js: 42ms, application-code: 15ms)[22m
+ GET /api/streams/1 [32m200[39m in 53ms[2m (next.js: 45ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 60ms[2m (next.js: 53ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 53ms[2m (next.js: 47ms, application-code: 6ms)[22m
+ GET /watch/1 [32m200[39m in 97ms[2m (next.js: 67ms, application-code: 30ms)[22m
+ GET /api/streams/1 [32m200[39m in 48ms[2m (next.js: 40ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 63ms[2m (next.js: 52ms, application-code: 12ms)[22m
+ GET /api/streams/1 [32m200[39m in 59ms[2m (next.js: 51ms, application-code: 8ms)[22m
+ GET /watch/1 [32m200[39m in 165ms[2m (next.js: 74ms, application-code: 90ms)[22m
+[36m[browser][39m [33mImage with src "http://localhost:5000/images/logo1.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.[39m
+ GET /api/streams/1 [32m200[39m in 88ms[2m (next.js: 69ms, application-code: 18ms)[22m
+ GET /api/streams/1 [32m200[39m in 86ms[2m (next.js: 70ms, application-code: 16ms)[22m
+ GET /api/streams/1 [32m200[39m in 8ms[2m (next.js: 2ms, application-code: 5ms)[22m
+ GET /api/streams/1 [32m200[39m in 86ms[2m (next.js: 57ms, application-code: 29ms)[22m
+ GET /api/streams/1 [32m200[39m in 54ms[2m (next.js: 41ms, application-code: 13ms)[22m
+ GET /api/streams/1 [32m200[39m in 59ms[2m (next.js: 53ms, application-code: 6ms)[22m
+ GET /api/streams/1 [32m200[39m in 51ms[2m (next.js: 44ms, application-code: 6ms)[22m
+ GET /api/streams/1 [32m200[39m in 58ms[2m (next.js: 51ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 48ms[2m (next.js: 41ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 57ms[2m (next.js: 50ms, application-code: 6ms)[22m
+ GET /api/streams/1 [32m200[39m in 64ms[2m (next.js: 55ms, application-code: 9ms)[22m
+ GET /api/streams/1 [32m200[39m in 50ms[2m (next.js: 43ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 55ms[2m (next.js: 45ms, application-code: 10ms)[22m
+ GET /api/streams/1 [32m200[39m in 78ms[2m (next.js: 64ms, application-code: 14ms)[22m
+ GET /api/streams/1 [32m200[39m in 64ms[2m (next.js: 55ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 71ms[2m (next.js: 65ms, application-code: 6ms)[22m
+ GET /api/streams/1 [32m200[39m in 51ms[2m (next.js: 44ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 96ms[2m (next.js: 66ms, application-code: 30ms)[22m
+ GET /api/streams/1 [32m200[39m in 67ms[2m (next.js: 57ms, application-code: 9ms)[22m
+ GET /api/streams/1 [32m200[39m in 77ms[2m (next.js: 65ms, application-code: 12ms)[22m
+ GET /api/streams/1 [32m200[39m in 47ms[2m (next.js: 41ms, application-code: 6ms)[22m
+ GET /api/streams/1 [32m200[39m in 48ms[2m (next.js: 43ms, application-code: 5ms)[22m
+ GET /api/streams/1 [32m200[39m in 65ms[2m (next.js: 56ms, application-code: 9ms)[22m
+ GET /api/streams/1 [32m200[39m in 48ms[2m (next.js: 38ms, application-code: 10ms)[22m
+ GET /api/streams/1 [32m200[39m in 61ms[2m (next.js: 54ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 55ms[2m (next.js: 47ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 48ms[2m (next.js: 42ms, application-code: 6ms)[22m
+ GET /api/streams/1 [32m200[39m in 49ms[2m (next.js: 41ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 58ms[2m (next.js: 52ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 59ms[2m (next.js: 52ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 48ms[2m (next.js: 43ms, application-code: 5ms)[22m
+ GET /api/streams/1 [32m200[39m in 61ms[2m (next.js: 54ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 74ms[2m (next.js: 66ms, application-code: 9ms)[22m
+ GET /api/streams/1 [32m200[39m in 97ms[2m (next.js: 71ms, application-code: 26ms)[22m
+ GET /api/streams/1 [32m200[39m in 81ms[2m (next.js: 72ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 60ms[2m (next.js: 53ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 73ms[2m (next.js: 55ms, application-code: 18ms)[22m
+ GET /api/streams/1 [32m200[39m in 62ms[2m (next.js: 55ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 50ms[2m (next.js: 43ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 73ms[2m (next.js: 65ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 62ms[2m (next.js: 54ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 77ms[2m (next.js: 68ms, application-code: 9ms)[22m
+ GET /api/streams/1 [32m200[39m in 61ms[2m (next.js: 53ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 58ms[2m (next.js: 52ms, application-code: 6ms)[22m
+ GET /api/streams/1 [32m200[39m in 47ms[2m (next.js: 40ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 63ms[2m (next.js: 56ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 63ms[2m (next.js: 55ms, application-code: 7ms)[22m
+ GET /api/streams/1 [32m200[39m in 61ms[2m (next.js: 53ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 46ms[2m (next.js: 41ms, application-code: 5ms)[22m
+ GET /api/streams/1 [32m200[39m in 84ms[2m (next.js: 56ms, application-code: 28ms)[22m

@@ -1,0 +1,318 @@
+Do not rebuild from scratch, and do not break the features that are already working.
+
+Current stable features that must remain intact
+
+Keep these working exactly as they are unless explicitly improved:
+
+YouTube live stream autoplay
+Tap to mute / unmute button
+Fullscreen button
+Hidden YouTube player controls
+Existing live stream playback behavior
+Existing overlay / ad system, unless modified below in a backward-compatible way
+
+The new implementation must be done carefully and incrementally, with each feature added in a way that does not collapse the layout or break autoplay/fullscreen/mute behavior. The requirements below are based on the issues and goals described in the project notes.
+
+Primary Goal
+
+Upgrade the streaming website so it becomes:
+
+highly responsive for mobile-first viewing
+clean, elegant, and premium-looking
+stable across Chrome, Edge, Safari, and mobile browsers
+better for betting conversions
+better for live-stream branding, overlays, and ads
+easier to manage from the backend/admin panel
+Implementation Requirements
+1. Preserve working live stream behavior
+
+The stream player must continue to support:
+
+YouTube live embed autoplay
+hidden YouTube controls
+mute/unmute without disruptive reloads
+fullscreen support
+overlays and ad rendering
+
+Do not reintroduce bugs where:
+
+autoplay fails
+the player reloads when toggling mute
+fullscreen breaks overlays
+YouTube branding becomes exposed unnecessarily during load/buffer states
+2. Add a branded loading/buffering overlay
+
+When the live video is:
+
+loading
+buffering
+waiting for playback
+reconnecting
+
+show a custom full-player loading overlay above the YouTube iframe.
+
+Loading overlay behavior
+It must fully cover the video area so the user does not see YouTube branding, YouTube thumbnails, or intermediate player UI.
+It should disappear automatically once playback is active.
+It should reappear if buffering happens again.
+It should fade in/out smoothly.
+Loading overlay content
+
+Use premium UI styling and show:
+
+branded background or dark gradient overlay
+loading spinner or animated shimmer
+message like:
+“Poor internet connection…”
+“Loading live stream…”
+“Please wait…”
+Important
+This overlay must not interfere with autoplay logic.
+It must not break fullscreen.
+It must not block the mute/unmute and fullscreen logic once playback starts.
+If needed, use YouTube player state detection or postMessage/API event handling to detect:
+unstarted
+buffering
+playing
+3. Make overlays stick to the actual video content, not black bars
+
+This is extremely important.
+
+Right now, when the video aspect ratio creates empty black bars or unused frame space, some overlays drift into those black areas because they are positioned relative to the outer player container instead of the actual visible video content.
+
+Required fix
+
+All overlays must be positioned and scaled relative to the actual rendered video rectangle, not just the full container.
+
+That means:
+
+if the YouTube content is letterboxed
+or pillarboxed
+or centered with empty side spaces
+
+then overlays must stay aligned to the visible video portion only.
+
+Expected behavior
+Logos, lower thirds, banners, and ads should remain attached to the actual video
+They should never float into black margins
+In fullscreen and normal mode, overlays should stay visually locked to the stream content
+Technical expectation
+
+Compute the rendered video box inside the container using the stream aspect ratio and container size, then anchor overlays to that calculated region.
+
+4. Make overlays responsive and scalable
+
+Overlay size and position must scale responsively across:
+
+mobile portrait
+mobile landscape
+tablets
+desktop
+fullscreen mode
+Required behavior
+Overlays should preserve proportional positioning
+Overlays should grow and shrink with the visible video area
+Existing dimensions should be converted or interpreted in a responsive way
+Ads/logos should not overflow or become tiny/unusable
+For media overlays
+
+If an overlay contains an image or video ad:
+
+intelligently scale it based on the dominant dimension
+ensure it fits its intended placement cleanly
+avoid stretching distortion
+avoid overflow outside the visible video content
+5. Auto-hide player action buttons when idle
+
+The Mute/Unmute and Fullscreen buttons should have a cleaner experience.
+
+Desktop behavior
+Show buttons on hover over the player
+Hide them when the user is idle or not hovering
+Mobile behavior
+Show buttons when the user taps/interacts with the player
+Hide them again after a few seconds of inactivity
+General rules
+Smooth fade/slide animation
+Buttons should never obstruct essential overlays
+Buttons should reappear immediately on interaction
+Buttons should still remain accessible and usable
+6. Improve mobile responsiveness of the homepage
+
+The site is mostly going to be viewed on phones, so the homepage must be treated as mobile-first.
+
+Fix the following sections
+A. Casino / Bets section
+Make cards, text, icons, and imagery responsive
+Prevent overflow and broken alignment
+Ensure consistent spacing and sizing
+Make it visually premium and easy to browse on mobile
+B. Live & Upcoming section
+Fix layout breakage
+Keep text inside cards/containers
+Prevent emoji/icon misalignment
+Ensure titles, status badges, and metadata wrap properly
+Maintain a clean card hierarchy
+General homepage expectations
+no broken text overflow
+no awkward spacing
+no elements sitting outside boxes
+no distorted card ratios
+no inconsistent font scaling
+strong visual hierarchy
+premium betting/gaming aesthetic
+7. Add a premium betting CTA section below the live video
+
+Below the live stream, create a beautiful conversion-focused section encouraging users to place bets.
+
+Purpose
+
+This section should push urgency and excitement while staying visually polished.
+
+Example messaging direction
+
+Use language in this style:
+
+Place your bet now
+Join thousands of players betting live
+Turn the action into winnings
+Bet smarter, win bigger
+Live odds are moving — don’t miss out
+UI expectations
+
+Include:
+
+strong heading
+short persuasive subtext
+1–2 CTA buttons such as:
+Bet Now
+Explore Live Odds
+Start Winning
+premium visuals
+motion/hover polish if appropriate
+mobile-friendly card or banner layout
+Important
+
+The design should feel like a polished sportsbook/casino landing page, not a generic alert box.
+
+8. Redesign the backend/admin panel
+
+The current backend feels cluttered and chaotic.
+Redesign it to feel more like a clean TV broadcast control panel / media agency dashboard.
+
+Goals
+
+Make it:
+
+less cluttered
+more streamlined
+easier to understand
+more professional
+faster to operate
+Backend should support clearly organized workflows for:
+managing streams
+adding/editing branding
+placing logo overlays
+uploading/running banners
+scheduling or starting ads
+controlling ticker/news strip
+adjusting overlay positions and sizes
+previewing responsive behavior across screen sizes
+UX direction
+
+Think:
+
+broadcast control room
+media campaign manager
+TV graphics backend
+clean modular panels
+grouped controls
+better visual separation
+fewer cramped elements
+Important
+
+Do not remove functionality.
+Instead:
+
+reorganize it
+reduce clutter
+improve usability
+make preview/editing easier
+9. Keep ticker/news placement user-friendly
+
+The live news ticker should not interfere with the viewing experience.
+
+Required behavior
+In normal view, keep the ticker below the video content
+In fullscreen, it may sit inside the frame if needed, but it should not obstruct important viewing zones
+Important
+
+The ticker must remain responsive and elegant.
+
+10. Visual design direction
+
+The final UI should resemble the premium visual style of the target reference design:
+
+richer layout composition
+more engaging hero/live sections
+better promotional content blocks
+stronger CTA treatment
+elegant buttons and hover states
+subtle animation
+premium sportsbook/casino feel
+
+Use a design direction that feels:
+
+modern
+cinematic
+betting-focused
+mobile polished
+visually rich but not cluttered
+Technical Constraints
+Do not break existing working functionality
+Implement in small, testable steps
+Reuse existing structure where possible
+Avoid unnecessary rewrites
+Make changes backward-compatible
+Prioritize stability across browsers
+Prioritize mobile responsiveness
+Test normal view + fullscreen + muted/unmuted + buffering + overlay rendering
+Suggested Implementation Order
+
+Follow this order exactly to avoid collapse:
+
+Preserve and verify current stable live stream behavior
+Add branded loading/buffering overlay
+Fix overlay anchoring to actual visible video area
+Make overlay size/position responsive
+Add auto-hide behavior for mute/fullscreen controls
+Fix homepage mobile responsiveness
+Add premium betting CTA below live video
+Redesign/admin cleanup
+Final polish and responsive QA
+Definition of Done
+
+The task is only complete when all of the following are true:
+
+autoplay still works
+mute/unmute still works without reload
+fullscreen still works
+YouTube branding is hidden during loading/buffering via custom overlay
+overlays stay attached to the real video content, not black bars
+overlays scale properly in fullscreen and mobile
+mute/fullscreen controls auto-hide elegantly
+casino/bets section is responsive
+live/upcoming section is responsive
+betting CTA section is added below the stream
+admin/backend is cleaner and more streamlined
+overall design feels premium and mobile-first
+Extra instruction to the agent
+
+Do not give vague summaries only.
+For each major step:
+
+explain what you changed
+explain why
+mention any risk areas
+confirm what was tested
+do not move to the next major step until the current one is stable

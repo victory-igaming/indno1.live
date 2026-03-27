@@ -1,0 +1,63 @@
+3. Make overlays stick to the actual video content, not black bars
+
+This is extremely important.
+
+Right now, when the video aspect ratio creates empty black bars or unused frame space, some overlays drift into those black areas because they are positioned relative to the outer player container instead of the actual visible video content.
+
+Required fix
+
+All overlays must be positioned and scaled relative to the actual rendered video rectangle, not just the full container.
+
+That means:
+
+if the YouTube content is letterboxed
+or pillarboxed
+or centered with empty side spaces
+
+then overlays must stay aligned to the visible video portion only.
+
+Expected behavior
+Logos, lower thirds, banners, and ads should remain attached to the actual video
+They should never float into black margins
+In fullscreen and normal mode, overlays should stay visually locked to the stream content
+Technical expectation
+
+Compute the rendered video box inside the container using the stream aspect ratio and container size, then anchor overlays to that calculated region.
+
+4. Make overlays responsive and scalable
+
+Overlay size and position must scale responsively across:
+
+mobile portrait
+mobile landscape
+tablets
+desktop
+fullscreen mode
+Required behavior
+Overlays should preserve proportional positioning
+Overlays should grow and shrink with the visible video area
+Existing dimensions should be converted or interpreted in a responsive way
+Ads/logos should not overflow or become tiny/unusable
+For media overlays
+
+If an overlay contains an image or video ad:
+
+intelligently scale it based on the dominant dimension
+ensure it fits its intended placement cleanly
+avoid stretching distortion
+avoid overflow outside the visible video content
+5. Auto-hide player action buttons when idle
+
+The Mute/Unmute and Fullscreen buttons should have a cleaner experience.
+
+Desktop behavior
+Show buttons on hover over the player
+Hide them when the user is idle or not hovering
+Mobile behavior
+Show buttons when the user taps/interacts with the player
+Hide them again after a few seconds of inactivity
+General rules
+Smooth fade/slide animation
+Buttons should never obstruct essential overlays
+Buttons should reappear immediately on interaction
+Buttons should still remain accessible and usable

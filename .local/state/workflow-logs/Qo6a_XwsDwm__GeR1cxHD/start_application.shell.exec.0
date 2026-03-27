@@ -1,0 +1,26 @@
+[1G[0K⠙[1G[0K
+> indno1.live@0.1.0 dev
+> next dev -p 5000 -H 0.0.0.0
+
+[1G[0K⠙[1G[0K[1m[38;2;173;127;168m▲ Next.js 16.2.1[39m[22m (Turbopack)
+- Local:         http://localhost:5000
+- Network:       http://0.0.0.0:5000
+[32m[1m✓[22m[39m Ready in 1209ms
+
+[37m[1m○[22m[39m Compiling / ...
+ GET / [32m200[39m in 8.6s[2m (next.js: 8.2s, application-code: 400ms)[22m
+[36m[browser][39m [33mImage with src "https://e644ad59-1917-453e-96e3-9a3d80b364b0-00-jzr76bb5tcp6.sisko.replit.dev/images/logo1.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.[39m [2m(https://e644ad59-1917-453e-96e3-9a3d80b364b0-00-jzr76bb5tcp6.sisko.replit.dev/__replco/static/devtools/injected.js:37:27)[22m
+ GET /api/streams?live=true [31m500[39m in 1738ms[2m (next.js: 53ms, application-code: 1685ms)[22m
+ GET /api/streams?sport=basketball [31m500[39m in 1989ms[2m (next.js: 295ms, application-code: 1694ms)[22m
+ GET /api/streams?sport=cricket [31m500[39m in 1999ms[2m (next.js: 300ms, application-code: 1700ms)[22m
+ GET /api/streams?sport=football [31m500[39m in 2000ms[2m (next.js: 297ms, application-code: 1702ms)[22m
+ GET / [32m200[39m in 105ms[2m (next.js: 40ms, application-code: 65ms)[22m
+[36m[browser][39m [33mImage with src "https://e644ad59-1917-453e-96e3-9a3d80b364b0-00-jzr76bb5tcp6.sisko.replit.dev/images/logo1.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.[39m [2m(https://e644ad59-1917-453e-96e3-9a3d80b364b0-00-jzr76bb5tcp6.sisko.replit.dev/__replco/static/devtools/injected.js:37:27)[22m
+ GET /api/streams?sport=football [32m200[39m in 40ms[2m (next.js: 16ms, application-code: 24ms)[22m
+ GET /api/streams?sport=basketball [32m200[39m in 44ms[2m (next.js: 13ms, application-code: 32ms)[22m
+ GET /api/streams?sport=cricket [32m200[39m in 59ms[2m (next.js: 6ms, application-code: 53ms)[22m
+ GET /api/streams?live=true [32m200[39m in 44ms[2m (next.js: 4ms, application-code: 39ms)[22m
+ GET /api/streams/1 [32m200[39m in 1946ms[2m (next.js: 1933ms, application-code: 13ms)[22m
+ GET /api/streams/1 [32m200[39m in 50ms[2m (next.js: 42ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 46ms[2m (next.js: 38ms, application-code: 8ms)[22m
+ GET /api/streams/1 [32m200[39m in 51ms[2m (next.js: 44ms, application-code: 7ms)[22m
