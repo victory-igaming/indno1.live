@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Adminheader from "@/components/Adminheader";
 
 interface Stream {
   id: number;
@@ -97,57 +98,20 @@ export default function AdminDashboard() {
   const totalSports = new Set(streams.map((s) => s.sport_type)).size;
 
   return (
-    <div className="min-h-screen text-white" style={{ background: "linear-gradient(160deg, #080402 0%, #0d0602 100%)" }}>
+    <div className="min-h-screen text-white admndsb_continaer" style={{ background: "linear-gradient(160deg, #080402 0%, #0d0602 100%)" }}>
 
       {/* Top bar */}
-      <header
-        className="sticky top-0 z-50 border-b px-4 sm:px-6 py-3 flex items-center justify-between gap-4"
-        style={{
-          background: "rgba(10,5,2,0.92)",
-          backdropFilter: "blur(16px)",
-          borderColor: "rgba(180,83,9,0.3)",
-        }}
-      >
-        <div className="flex items-center gap-3">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0"
-            style={{ background: "linear-gradient(135deg, #b45309, #9a3412)" }}
-          >
-            📡
-          </div>
-          <div>
-            <h1 className="font-black text-sm uppercase tracking-widest text-white">Broadcast Control</h1>
-            <p className="text-amber-600/60 text-xs hidden sm:block">Live Stream Management</p>
-          </div>
-        </div>
+     <Adminheader adminName={adminName} />
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          {adminName && (
-            <span className="hidden sm:flex items-center gap-1.5 text-xs text-amber-400/60 border border-amber-900/30 px-2.5 py-1 rounded-lg">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-              {adminName}
-            </span>
-          )}
-          <Link
-            href="/"
-            target="_blank"
-            className="text-xs text-amber-400/70 hover:text-amber-400 transition-colors border border-amber-900/30 hover:border-amber-700/50 px-3 py-1.5 rounded-lg"
-          >
-            View Site ↗
-          </Link>
-          <button
-            onClick={logout}
-            className="text-xs text-red-400/80 hover:text-red-300 transition-colors border border-red-900/40 hover:border-red-700/60 px-3 py-1.5 rounded-lg"
-          >
-            Logout
-          </button>
-        </div>
-      </header>
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-      <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+          {/* Left side Menu */}
+        <div className="lg:col-span-9 space-y-6">        
 
         {/* Stats row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-6">
           {[
             { label: "Total Streams", value: streams.length, icon: "📺", color: "from-blue-900/30 to-blue-900/10", border: "border-blue-800/30" },
             { label: "Live Now", value: totalLive, icon: "🔴", color: "from-red-900/30 to-red-900/10", border: "border-red-800/30", pulse: totalLive > 0 },
@@ -156,15 +120,15 @@ export default function AdminDashboard() {
           ].map((stat) => (
             <div
               key={stat.label}
-              className={`relative overflow-hidden rounded-xl border p-4 ${stat.border}`}
+              className={`relative overflow-hidden rounded-xl border-2 p-4 ${stat.border} flex flex-col items-center justify-center text-center admndsb_body_card`}
               style={{ background: `linear-gradient(135deg, ${stat.color.replace("from-", "").replace(" to-", ", ")})` }}
             >
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between admndsb_body_cardbox">
                 <div>
-                  <div className="text-2xl font-black text-white">{stat.value}</div>
-                  <div className="text-xs text-zinc-400 uppercase tracking-widest mt-0.5">{stat.label}</div>
+                  <div className="text-2xl font-black text-white admndsb_body_card_count">{stat.value}</div>
+                  <div className="text-xs text-zinc-400 uppercase tracking-widest mt-0.5 admndsb_body_card_title">{stat.label}</div>
                 </div>
-                <span className={`text-xl ${stat.pulse ? "animate-pulse" : ""}`}>{stat.icon}</span>
+                <span className={`text-xl ${stat.pulse ? "animate-pulse" : ""} admndsb_body_card_icon`}>{stat.icon}</span>
               </div>
             </div>
           ))}
@@ -172,19 +136,19 @@ export default function AdminDashboard() {
 
         {/* Streams panel */}
         <div>
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3 admndsb_body_strmcontainer">
             <div className="flex items-center gap-2">
               <div className="w-1 h-5 rounded-full" style={{ background: "linear-gradient(to bottom, #f59e0b, #c2410c)" }} />
               <h2 className="font-black text-base uppercase tracking-widest">Streams</h2>
               {totalLive > 0 && (
-                <span className="flex items-center gap-1 bg-red-600 text-white text-xs font-black uppercase px-2 py-0.5 rounded-full animate-pulse">
+                <span className="flex items-center gap-1 bg-red-600 text-white text-xs font-black uppercase px-2 py-0.5 rounded-full animate-pulse admndsb_body_strmbody_live">
                   ● {totalLive} Live
                 </span>
               )}
             </div>
             <Link
               href="/admin/streams/new"
-              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide px-4 py-2 rounded-xl transition-all"
+              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide px-4 py-2 rounded-xl transition-all admndsb_body_strmbody_live"
               style={{
                 background: "linear-gradient(135deg, #dc2626, #b91c1c)",
                 color: "white",
@@ -228,7 +192,7 @@ export default function AdminDashboard() {
               {streams.map((stream) => (
                 <div
                   key={stream.id}
-                  className="rounded-xl border transition-all duration-200"
+                  className="rounded-xl border transition-all duration-200 admndsb_body_strmbody"
                   style={{
                     background: stream.is_live
                       ? "linear-gradient(135deg, #1f0707, #170404)"
@@ -241,23 +205,23 @@ export default function AdminDashboard() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="text-base">{SPORT_ICONS[stream.sport_type] || "🎯"}</span>
-                        <span className="font-bold text-white text-sm truncate max-w-[200px] sm:max-w-xs">
+                        <span className="font-bold text-white text-sm truncate max-w-[200px] sm:max-w-xs admndsb_body_strmbody_heading">
                           {stream.title}
                         </span>
                         {stream.is_live && (
-                          <span className="flex items-center gap-1 bg-red-600 text-white text-xs font-black uppercase px-2 py-0.5 rounded-full animate-pulse">
+                          <span className="flex items-center gap-1 bg-red-600 text-white text-xs font-black uppercase px-2 py-0.5 rounded-full animate-pulse admndsb_body_strmbody_live">
                             ● LIVE
                           </span>
                         )}
                         {!stream.is_active && (
-                          <span className="bg-zinc-700/60 text-zinc-400 text-xs font-bold uppercase px-2 py-0.5 rounded-full border border-zinc-700">
+                          <span className="bg-zinc-700/60 text-zinc-400 text-xs font-bold uppercase px-2 py-0.5 rounded-full border border-zinc-700 admndsb_body_strmbody_live">
                             Inactive
                           </span>
                         )}
                       </div>
-                      <div className="text-zinc-500 text-xs truncate max-w-xs">{stream.youtube_url}</div>
+                      <div className="text-zinc-500 text-xs truncate max-w-xs admndsb_body_strmbody_url">{stream.youtube_url}</div>
                       {(stream.team1 || stream.team2) && (
-                        <div className="text-zinc-400 text-xs mt-1 flex items-center gap-1.5">
+                        <div className="text-zinc-400 text-xs mt-1 flex items-center gap-1.5 admndsb_body_strmbody_title">
                           <span>{stream.team1}</span>
                           {stream.team1 && stream.team2 && <span className="text-amber-600/50 font-bold">vs</span>}
                           <span>{stream.team2}</span>
@@ -270,15 +234,15 @@ export default function AdminDashboard() {
                       <Link
                         href={`/watch/${stream.id}`}
                         target="_blank"
-                        className="text-xs border border-zinc-700/60 hover:border-amber-700/50 text-zinc-400 hover:text-amber-400 px-3 py-1.5 rounded-lg transition-all"
+                        className="text-xs border border-zinc-700/60 hover:border-amber-700/50 text-zinc-400 hover:text-amber-400 px-3 py-1.5 rounded-lg transition-all admndsb_body_strmbody_btnbody"
                       >
-                        Watch ↗
+                        Watch 👁️
                       </Link>
                       <Link
                         href={`/admin/streams/${stream.id}`}
-                        className="text-xs border border-zinc-700/60 hover:border-amber-700/50 text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition-all"
+                        className="text-xs border border-zinc-700/60 hover:border-amber-700/50 text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition-all admndsb_body_strmbody_btnbody"
                       >
-                        Edit
+                        Edit 🛠️
                       </Link>
                       <button
                         onClick={() => toggleLive(stream)}
@@ -287,16 +251,16 @@ export default function AdminDashboard() {
                           stream.is_live
                             ? "bg-red-600/15 border border-red-600/50 text-red-400 hover:bg-red-600/25"
                             : "bg-green-600/15 border border-green-600/50 text-green-400 hover:bg-green-600/25"
-                        }`}
+                        } admndsb_body_strmbody_btnbody`}
                       >
-                        {togglingId === stream.id ? "…" : stream.is_live ? "Stop Live" : "Go Live"}
+                        {togglingId === stream.id ? "…" : stream.is_live ? "Stop Live" : "Go Live"} 🖥️
                       </button>
                       <button
                         onClick={() => deleteStream(stream.id)}
                         disabled={deletingId === stream.id}
-                        className="text-xs border border-zinc-800 hover:border-red-900/50 text-zinc-600 hover:text-red-400 px-3 py-1.5 rounded-lg transition-all disabled:opacity-40"
+                        className="text-xs border border-zinc-800 hover:border-red-900/50 text-zinc-600 hover:text-red-400 px-3 py-1.5 rounded-lg transition-all disabled:opacity-40 admndsb_body_strmbody_btnbody"
                       >
-                        {deletingId === stream.id ? "…" : "Delete"}
+                        {deletingId === stream.id ? "…" : "Delete"} 🗑️
                       </button>
                     </div>
                   </div>
@@ -304,13 +268,33 @@ export default function AdminDashboard() {
               ))}
             </div>
           )}
+
+        
+
+          
         </div>
 
-        {/* Footer hint */}
+          
+        </div>
+
+
+           {/* Right side Menu */}
+        <div className="lg:col-span-3 space-y-6">
+              <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+                       
+               </div>
+
+        </div>
+
+        </div>
+
+        
+      </div>
+
+      {/* Footer hint */}
         <p className="text-center text-zinc-700 text-xs pb-4">
           Broadcast Control Panel · IndNO1 Admin · {new Date().getFullYear()}
         </p>
-      </div>
     </div>
   );
 }

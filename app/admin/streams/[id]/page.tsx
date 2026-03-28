@@ -11,6 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import DraggableOverlayEditor from "@/components/DraggableOverlayEditor";
+import Adminheader from "@/components/Adminheader";
 
 interface Overlay {
   id: number;
@@ -56,6 +57,7 @@ export default function EditStream({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [adminName, setAdminName] = useState("");
   const positionSaveTimers = useRef<
     Record<number, ReturnType<typeof setTimeout>>
   >({});
@@ -76,9 +78,13 @@ export default function EditStream({
   const [togglingAd, setTogglingAd] = useState(false);
 
   useEffect(() => {
-    fetch("/api/auth/me").then((r) => {
-      if (!r.ok) router.push("/admin/login");
-    });
+   fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.error) { router.push("/admin/login"); return; }
+        setAdminName(d.username);        
+      })
+      .catch(() => router.push("/admin/login"));
     loadData();
   }, [id, router]);
 
@@ -325,7 +331,11 @@ export default function EditStream({
       className="min-h-screen text-white"
       style={{ background: "linear-gradient(to bottom, #1f0d04, #120602)" }}
     >
-      <header
+
+        {/* Top bar */}
+       <Adminheader adminName={adminName} />
+
+      <div
         className="sticky top-0 z-50 backdrop-blur px-6 py-4 flex items-center gap-4"
         style={{
           background: "rgba(18,6,2,0.85)",
@@ -334,19 +344,19 @@ export default function EditStream({
       >
         <Link
           href="/admin"
-          className="text-amber-400/50 hover:text-amber-400 transition-colors text-sm font-medium"
+          className="text-amber-400/50 hover:text-amber-400 transition-colors text-sm font-medium admndsb_editstrm_mainheaderLink"
         >
           ← Dashboard
         </Link>
-        <div className="w-px h-4 bg-amber-900/40" />
-        <h1 className="font-black uppercase tracking-widest text-sm text-amber-300/80">
+        <div className="w-px h-4 bg-amber-900/40 " />
+        <h1 className="font-black uppercase tracking-widest text-sm text-amber-300/80 admndsb_editstrm_mainheader">
           Edit Stream
         </h1>
         <div className="ml-auto flex gap-3">
           <Link
             href={`/watch/${id}`}
             target="_blank"
-            className="text-xs font-bold px-3 py-1.5 rounded-lg transition-colors text-amber-400/70 hover:text-amber-300"
+            className="text-xs font-bold px-3 py-1.5 rounded-lg transition-colors text-amber-400/70 hover:text-amber-300 admndsb_editstrm_mainheaderLink"
             style={{
               border: "1px solid rgba(180,83,9,0.3)",
               background: "rgba(180,83,9,0.08)",
@@ -355,9 +365,11 @@ export default function EditStream({
             Watch ↗
           </Link>
         </div>
-      </header>
+      </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+
+
+      <div className="max-w-4xl mx-auto px-4 py-8 space-y-6 admndsb_editstrm_main">
         {error && (
           <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl">
             {error}
@@ -372,17 +384,17 @@ export default function EditStream({
         {/* Stream Form */}
         <form
           onSubmit={saveStream}
-          className="rounded-2xl p-6 space-y-5"
+          className="rounded-2xl p-6 space-y-5 admndsb_editstrm_form"
           style={{
             background: "linear-gradient(135deg, #2e1408, #1a0a03)",
             border: "1px solid rgba(180,83,9,0.25)",
           }}
         >
-          <h2 className="font-bold uppercase tracking-widest text-xs text-amber-400/60">
+          <h2 className="font-bold uppercase tracking-widest text-xs text-amber-400/60 admndsb_editstrm_formbdy">
             Stream Details
           </h2>
-          <div>
-            <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2">
+          <div className="admndsb_editstrm_formbdy">
+            <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2 admndsb_editstrm_formlable">
               Title
             </label>
             <input
@@ -391,15 +403,15 @@ export default function EditStream({
               onChange={(e) => setStream({ ...stream, title: e.target.value })}
               required
               maxLength={255}
-              className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none"
+              className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none admndsb_editstrm_forminput"
               style={{
                 background: "rgba(0,0,0,0.35)",
                 border: "1px solid rgba(180,83,9,0.3)",
               }}
             />
           </div>
-          <div>
-            <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2">
+          <div className="admndsb_editstrm_formbdy">
+            <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2 admndsb_editstrm_formlable">
               Sport
             </label>
             <div className="flex gap-2 flex-wrap">
@@ -412,7 +424,7 @@ export default function EditStream({
                     stream.sport_type === s
                       ? "text-white"
                       : "text-amber-300/50 hover:text-amber-300"
-                  }`}
+                  } admndsb_editstrm_forminput`}
                   style={{
                     background:
                       stream.sport_type === s
@@ -429,8 +441,8 @@ export default function EditStream({
               ))}
             </div>
           </div>
-          <div>
-            <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2">
+          <div className="admndsb_editstrm_formbdy">
+            <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2 admndsb_editstrm_formlable">
               YouTube URL
             </label>
             <input
@@ -440,7 +452,7 @@ export default function EditStream({
                 setStream({ ...stream, youtube_url: e.target.value })
               }
               required
-              className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none"
+              className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none admndsb_editstrm_forminput"
               style={{
                 background: "rgba(0,0,0,0.35)",
                 border: "1px solid rgba(180,83,9,0.3)",
@@ -448,8 +460,8 @@ export default function EditStream({
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2">
+            <div className="admndsb_editstrm_formbdy">
+              <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2 admndsb_editstrm_formlable">
                 Team 1
               </label>
               <input
@@ -459,15 +471,15 @@ export default function EditStream({
                   setStream({ ...stream, team1: e.target.value })
                 }
                 maxLength={150}
-                className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none"
+                className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none admndsb_editstrm_forminput"
                 style={{
                   background: "rgba(0,0,0,0.35)",
                   border: "1px solid rgba(180,83,9,0.3)",
                 }}
               />
             </div>
-            <div>
-              <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2">
+            <div className="admndsb_editstrm_formbdy">
+              <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2 admndsb_editstrm_formlable">
                 Team 2
               </label>
               <input
@@ -477,7 +489,7 @@ export default function EditStream({
                   setStream({ ...stream, team2: e.target.value })
                 }
                 maxLength={150}
-                className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none"
+                className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none admndsb_editstrm_forminput"
                 style={{
                   background: "rgba(0,0,0,0.35)",
                   border: "1px solid rgba(180,83,9,0.3)",
@@ -485,8 +497,8 @@ export default function EditStream({
               />
             </div>
           </div>
-          <div>
-            <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2">
+          <div className="admndsb_editstrm_formbdy">
+            <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2 admndsb_editstrm_formlable">
               Scheduled Date &amp; Time
             </label>
             <input
@@ -499,7 +511,7 @@ export default function EditStream({
               onChange={(e) =>
                 setStream({ ...stream, scheduled_at: e.target.value })
               }
-              className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none"
+              className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none admndsb_editstrm_forminput"
               style={{
                 background: "rgba(0,0,0,0.35)",
                 border: "1px solid rgba(180,83,9,0.3)",
@@ -513,7 +525,7 @@ export default function EditStream({
             ].map(({ key, label, color }) => (
               <label
                 key={key}
-                className="flex items-center gap-3 cursor-pointer"
+                className="flex items-center gap-3 cursor-pointer admndsb_editstrm_formlable"
               >
                 <div
                   onClick={() =>
@@ -535,7 +547,7 @@ export default function EditStream({
           <button
             type="submit"
             disabled={saving}
-            className="w-full disabled:opacity-50 text-black py-3 rounded-xl text-sm font-black uppercase tracking-widest transition-all hover:opacity-90"
+            className="w-full disabled:opacity-50 text-black py-3 rounded-xl text-sm font-black uppercase tracking-widest transition-all hover:opacity-90 admndsb_editstrm_formbtn"
             style={{ background: "linear-gradient(135deg, #fbbf24, #f97316)" }}
           >
             {saving ? "Saving..." : "Save Changes"}
@@ -544,7 +556,7 @@ export default function EditStream({
 
         {/* Ad Control Panel */}
         <div
-          className={`rounded-2xl p-6 space-y-4 transition-colors ${stream.ad_active ? "border-orange-600/50" : ""}`}
+          className={`rounded-2xl p-6 space-y-4 transition-colors ${stream.ad_active ? "border-orange-600/50" : ""}admndsb_editstrm_adctrbody`}
           style={{
             background: stream.ad_active
               ? "linear-gradient(135deg, #3d1a02, #2a1005)"
@@ -554,13 +566,13 @@ export default function EditStream({
               : "1px solid rgba(180,83,9,0.25)",
           }}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between ">
             <div>
-              <h2 className="font-bold uppercase tracking-widest text-xs text-amber-400/60">
+              <h2 className="font-bold uppercase tracking-widest text-xs text-amber-400/60 admndsb_editstrm_adctrbody_title">
                 Ad Control
               </h2>
               {stream.ad_active && activeAdOverlay && (
-                <p className="text-orange-400 text-xs mt-1">
+                <p className="text-orange-400 text-xs mt-1 ">
                   🔴 Ad is live on all viewer screens
                 </p>
               )}
@@ -569,7 +581,7 @@ export default function EditStream({
               <button
                 onClick={() => toggleAd(false, null)}
                 disabled={togglingAd}
-                className="text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+                className="text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors disabled:opacity-50 admndsb_editstrm_formbtn2"
                 style={{
                   background: "rgba(180,83,9,0.2)",
                   border: "1px solid rgba(180,83,9,0.4)",
@@ -581,7 +593,7 @@ export default function EditStream({
           </div>
 
           {adOverlays.length === 0 ? (
-            <p className="text-amber-300/30 text-sm">
+            <p className="text-amber-300/30 text-sm admndsb_editstrm_adctrbody_moto">
               Add an ad overlay below to enable ad controls.
             </p>
           ) : (
@@ -633,7 +645,7 @@ export default function EditStream({
                       <button
                         onClick={() => toggleAd(true, ad.id)}
                         disabled={togglingAd}
-                        className="bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                        className="bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50 admndsb_editstrm_formbtn2"
                       >
                         ▶ Start Ad
                       </button>
@@ -647,13 +659,13 @@ export default function EditStream({
 
         {/* Drag-and-drop Overlay Editor */}
         <div
-          className="rounded-2xl p-6 space-y-4"
+          className="rounded-2xl p-6 space-y-4 admndsb_editstrm_adctrbody"
           style={{
             background: "linear-gradient(135deg, #2e1408, #1a0a03)",
             border: "1px solid rgba(180,83,9,0.25)",
           }}
         >
-          <h2 className="font-bold uppercase tracking-widest text-xs text-amber-400/60">
+          <h2 className="font-bold uppercase tracking-widest text-xs text-amber-400/60 admndsb_editstrm_adctrbody_title ">
             Overlay Editor
           </h2>
           <DraggableOverlayEditor
@@ -666,7 +678,7 @@ export default function EditStream({
 
           {/* Overlay list */}
           {overlays.length > 0 && (
-            <div className="space-y-2 mt-2">
+            <div className="space-y-2 mt-2 ">
               {overlays.map((o) => (
                 <div
                   key={o.id}
@@ -681,7 +693,7 @@ export default function EditStream({
                     opacity: o.is_active ? 1 : 0.6,
                   }}
                 >
-                  <div className="flex items-center gap-3 p-3">
+                  <div className="flex items-center gap-3 p-3 admndsb_editstrm_formbdy">
                     <div
                       className="w-12 h-8 rounded overflow-hidden shrink-0"
                       style={{ background: "rgba(0,0,0,0.4)" }}
@@ -701,7 +713,7 @@ export default function EditStream({
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex items-center gap-2 flex-wrap admndsb_editstrm_formbdy">
                         <span
                           className={`text-xs font-black uppercase px-2 py-0.5 rounded ${o.type === "ad" ? "bg-orange-600/20 text-orange-400" : o.type === "logo" ? "bg-blue-600/20 text-blue-400" : "bg-purple-600/20 text-purple-400"}`}
                         >
@@ -725,19 +737,19 @@ export default function EditStream({
                     </div>
                     <button
                       onClick={() => toggleOverlayActive(o)}
-                      className={`shrink-0 text-xs px-2 py-1 rounded border transition-colors font-bold ${o.is_active ? "border-amber-800/40 text-amber-300/50 hover:border-red-600 hover:text-red-400" : "border-green-700/60 text-green-500 hover:border-green-500"}`}
+                      className={`shrink-0 text-xs px-2 py-1 rounded border transition-colors font-bold ${o.is_active ? "border-amber-800/40 text-amber-300/50 hover:border-red-600 hover:text-red-400" : "border-green-700/60 text-green-500 hover:border-green-500"} admndsb_editstrm_formbtn2`}
                     >
                       {o.is_active ? "Hide" : "Show"}
                     </button>
                     <button
                       onClick={() => deleteOverlay(o.id)}
-                      className="shrink-0 text-xs px-2 py-1 rounded border border-red-900/30 text-red-500/40 hover:border-red-700 hover:text-red-400 transition-colors"
+                      className="shrink-0 text-xs px-2 py-1 rounded border border-red-900/30 text-red-500/40 hover:border-red-700 hover:text-red-400 transition-colors admndsb_editstrm_formbtn2"
                     >
                       Del
                     </button>
                   </div>
                   {/* Opacity slider */}
-                  <div className="px-3 pb-3 flex items-center gap-3">
+                  <div className="px-3 pb-3 flex items-center gap-3 admndsb_editstrm_formbdy">
                     <span className="text-xs text-amber-300/30 w-14 shrink-0">
                       Opacity
                     </span>
@@ -766,7 +778,7 @@ export default function EditStream({
                           });
                         }, 300);
                       }}
-                      className="flex-1 h-1.5 accent-orange-500"
+                      className="flex-1 h-1.5 accent-orange-500 admndsb_editstrm_forminput"
                     />
                     <span className="text-xs text-zinc-400 w-8 text-right">
                       {Math.round(o.opacity * 100)}%
@@ -789,7 +801,7 @@ export default function EditStream({
             <h3 className="text-xs font-bold uppercase tracking-widest text-amber-400/60">
               Add Overlay
             </h3>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2 admndsb_editstrm_formbdy">
               {OVERLAY_TYPES.map((t) => (
                 <button
                   key={t}
@@ -799,7 +811,7 @@ export default function EditStream({
                     overlayForm.type === t
                       ? "text-white"
                       : "text-amber-300/50 hover:text-amber-300"
-                  }`}
+                  } admndsb_editstrm_formbtn2`}
                   style={{
                     background:
                       overlayForm.type === t
@@ -822,15 +834,15 @@ export default function EditStream({
 
             {/* Upload or URL */}
             <div>
-              <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2">
+              <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2 admndsb_editstrm_formlable">
                 Media (Image / GIF / Video)
               </label>
-              <div className="flex gap-2">
+              <div className="flex gap-2 admndsb_editstrm_formbdy">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingFile}
-                  className="shrink-0 disabled:opacity-50 text-amber-300/80 text-xs font-bold px-3 py-2 rounded-lg transition-colors flex items-center gap-1 hover:text-white"
+                  className="shrink-0 disabled:opacity-50 text-amber-300/80 text-xs font-bold px-3 py-2 rounded-lg transition-colors flex items-center gap-1 hover:text-white admndsb_editstrm_formbtn2"
                   style={{
                     background: "rgba(180,83,9,0.2)",
                     border: "1px solid rgba(180,83,9,0.3)",
@@ -848,7 +860,7 @@ export default function EditStream({
                     })
                   }
                   placeholder="or paste URL..."
-                  className="flex-1 rounded-lg px-3 py-2 text-white text-sm focus:outline-none placeholder-amber-300/20"
+                  className="flex-1 rounded-lg px-3 py-2 text-white text-sm focus:outline-none placeholder-amber-300/20 admndsb_editstrm_forminput"
                   style={{
                     background: "rgba(0,0,0,0.35)",
                     border: "1px solid rgba(180,83,9,0.25)",
@@ -859,7 +871,7 @@ export default function EditStream({
                 ref={fileInputRef}
                 type="file"
                 accept="image/*,video/mp4,video/webm"
-                className="hidden"
+                className="hidden admndsb_editstrm_forminput"
                 onChange={handleFileChange}
               />
               {overlayForm.image_url && (
@@ -884,9 +896,9 @@ export default function EditStream({
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-1">
+            <div className="grid grid-cols-2 gap-3 admndsb_editstrm_formbdy">
+              <div className="admndsb_editstrm_formbdy">
+                <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-1 admndsb_editstrm_formlable">
                   Width (px)
                 </label>
                 <input
@@ -900,15 +912,15 @@ export default function EditStream({
                   }
                   min={20}
                   max={800}
-                  className="w-full rounded-lg px-3 py-2 text-white text-sm focus:outline-none"
+                  className="w-full rounded-lg px-3 py-2 text-white text-sm focus:outline-none admndsb_editstrm_forminput"
                   style={{
                     background: "rgba(0,0,0,0.35)",
                     border: "1px solid rgba(180,83,9,0.25)",
                   }}
                 />
               </div>
-              <div>
-                <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-1">
+              <div className="admndsb_editstrm_formbdy">
+                <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-1 admndsb_editstrm_formlable">
                   Height (px)
                 </label>
                 <input
@@ -922,15 +934,15 @@ export default function EditStream({
                   }
                   min={10}
                   max={600}
-                  className="w-full rounded-lg px-3 py-2 text-white text-sm focus:outline-none"
+                  className="w-full rounded-lg px-3 py-2 text-white text-sm focus:outline-none admndsb_editstrm_forminput"
                   style={{
                     background: "rgba(0,0,0,0.35)",
                     border: "1px solid rgba(180,83,9,0.25)",
                   }}
                 />
               </div>
-              <div>
-                <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-1">
+              <div className="admndsb_editstrm_formbdy">
+                <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-1 admndsb_editstrm_formlable">
                   Opacity (0–1)
                 </label>
                 <input
@@ -945,7 +957,7 @@ export default function EditStream({
                   min={0}
                   max={1}
                   step={0.05}
-                  className="w-full rounded-lg px-3 py-2 text-white text-sm focus:outline-none"
+                  className="w-full rounded-lg px-3 py-2 text-white text-sm focus:outline-none admndsb_editstrm_forminput"
                   style={{
                     background: "rgba(0,0,0,0.35)",
                     border: "1px solid rgba(180,83,9,0.25)",
@@ -953,8 +965,8 @@ export default function EditStream({
                 />
               </div>
               {overlayForm.type === "ad" && (
-                <div>
-                  <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-1">
+                <div className="admndsb_editstrm_formbdy">
+                  <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-1 admndsb_editstrm_formlable">
                     Loop Duration (s)
                   </label>
                   <input
@@ -968,7 +980,7 @@ export default function EditStream({
                     }
                     min={1}
                     max={300}
-                    className="w-full rounded-lg px-3 py-2 text-white text-sm focus:outline-none"
+                    className="w-full rounded-lg px-3 py-2 text-white text-sm focus:outline-none admndsb_editstrm_forminput"
                     style={{
                       background: "rgba(0,0,0,0.35)",
                       border: "1px solid rgba(180,83,9,0.25)",
@@ -981,7 +993,7 @@ export default function EditStream({
             <button
               type="submit"
               disabled={addingOverlay || uploadingFile}
-              className="w-full disabled:opacity-50 text-amber-300/80 hover:text-white py-2 rounded-xl text-sm font-bold uppercase tracking-widest transition-colors"
+              className="w-full disabled:opacity-50 text-amber-300/80 hover:text-white py-2 rounded-xl text-sm font-bold uppercase tracking-widest transition-colors admndsb_editstrm_formbtn"
               style={{
                 background: "rgba(180,83,9,0.15)",
                 border: "1px solid rgba(180,83,9,0.3)",

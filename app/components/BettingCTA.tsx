@@ -15,6 +15,7 @@ export default function BettingCTA() {
           background: "linear-gradient(135deg, #1a0500 0%, #2e0d02 40%, #1a0500 100%)",
         }}
       />
+      
       {/* Decorative glow */}
       <div
         className="absolute -top-20 -right-20 w-72 h-72 rounded-full opacity-10 pointer-events-none"

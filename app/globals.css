@@ -60,7 +60,7 @@
 
     .gaming-container {
       min-height: 100vh;
-     background: linear-gradient(to bottom, #2e0e02, #1f120a, #2e0e02); 
+      background: linear-gradient(270deg, #2e0e02, #502710, #2e0e02);
       /*  background: var(--grad-main);*/
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     }
@@ -3758,7 +3758,56 @@
 
 /* ---------------------- Developer Add Css ------ */
 
+
+/* ---------------------- Developer Landing Page ------ */
+
+
+
+
 /*  main page and componets [BettingCTA, ] */
+.featueNoLive{
+   padding: 20px;
+}
+
+.featueNoLive_icon{
+    margin-left: 6%;
+    margin-top: 14%;
+}
+
+
+.featueNoLive_betting{
+   padding: 20px;
+   animation: 1s infinite playblinkBtn;
+}
+
+
+.landing_butNext{
+   padding: 10px;   
+}
+
+.landing_txtNumber{
+   padding: 20px;   
+}
+
+/*  Home Live Player componets */
+
+.Streamheader_content{
+  padding: 4px  8px  16px 8px;
+}
+
+/*  Player componets */
+.indPlayer_txtLive{
+   padding: 2px 22px;   
+}
+
+
+/*  News componets */
+.indPlayer_txtNews{
+   padding: 2px 22px;   
+}
+
+
+
 .featueLive{
    padding: 20px;
 }
@@ -3825,8 +3874,8 @@
 /*   componets [SportTab, ] */
 
 .spotab_maincontent{
-  padding: 1px;
-  height: 320px;
+  padding: 20px 2px;
+  min-height: 320px;
 }
 
 .spotab_topcontent{
@@ -3846,6 +3895,7 @@
 }
 
 .spotab_menuitem{
+
  padding: 6px 20px 6px 8px;
 
 }
@@ -3853,7 +3903,6 @@
 
 .spotab_menuitemcntent{
  padding: 6px;
-
 }
 
 .spotab_menuitemcntent_heading{
@@ -3861,36 +3910,52 @@
 
 }
 
+.spotab_menuitemcntent_title{
+ padding: 6px 6px 6px 8px;
+
+}
+
 .spotab_menuitemcntent_shadulu{
- padding: 6px 6px 6px 8px;
-
-}
-
-.spotab_menuitemcntent_match{
- padding: 6px 6px 6px 8px;
-
-}
-
-.spotab_menuitemcntent_match{
- padding: 6px 6px 6px 8px;
+ padding: 4px 10px;
+ margin-bottom: 6px;
+ margin-left: 10px;
 
 }
 
 .spotab_menuitemcntent_btnwatch{
  padding: 4px 10px;
+ margin-bottom: 6px;
+ margin-left: 10px;
+
+}
+
+.spotab_menuitemcntent_match{
+ padding: 6px 6px 6px 8px;
+
+}
+
+.spotab_menuitemcntent_btnupcome{
+ margin-top: 8px;
+ margin-right: 10px;
+ padding: 2px 6px 2px 8px;
 
 }
 
 .spotab_menuitemcntent_btnlive{
- padding: 6px 6px 6px 8px;
+ margin-top: 8px;
+ margin-right: 10px;
+ padding: 2px 6px 2px 8px;
 
 }
+
+
 
 .spotab_menuitemcntent_btnbetnow{
  padding: 6px 6px 6px 8px;
+ margin-bottom: 6px;
+ margin-right: 10px;
 
 }
-
 
 .spotab_midledata{
   padding: 1px;
@@ -3901,11 +3966,74 @@
 }
 
 
+
+/* ---------------------- Developer Watch Page ------ */
+
+
 /*   componets [Watch, ] */
+.pgWatch_maincontener{
+  margin-left: 20%;
+  padding: 10px 4px;
+}
+
 
 .pgWatch_contener{
-  padding: 20px 8px;  
+  margin-left: 20%;
 }
+
+.pgWatch_btnBckTop{
+  padding: 8px 2px;
+ 
+}
+
+.pgWatch_btnBckLink{
+    font-size: 22px;
+    color: #fff; 
+}
+
+.pgWatch_btnBckLink:hover{
+    font-size: 22px;
+    color: #7b3306;
+}
+
+
+.pgWatch_top_conteiner{
+  padding: 12px 4px;
+}
+
+
+.pgWatch_top_icon{
+  /* yorcode hare */
+}
+
+.pgWatch_top_btnGame{
+  padding: 8px 16px;
+}
+
+.pgWatch_top_btnStatus{
+  padding: 8px 16px;
+}
+
+
+
+.pgWatch_top_heading{
+  padding: 12px 4px;
+}
+
+.pgWatch_top_title{
+  padding: 1px 1px;
+  margin-bottom: 10px;
+}
+
+.pgWatch_top_shadul{
+  padding: 1px 1px;
+  color: #eab308;
+}
+
+.pgWatch_top_btnBack{
+ padding: 1px 1px;
+}
+
 
 .pgWatch_contener_title{
   padding: 20px 1px;
@@ -3914,6 +4042,288 @@
 .pgWatch_contener_tplive{
   padding: 2px 12px;
 }
+
+.pgWatch_nolive_icon{
+  display: inline;
+}
+
+.pgWatch_nolive_icontext{
+  padding: 6px 10px; 
+}
+
+.pgWatch_nolive_heading{
+  padding: 12px 4px;
+}
+
+.pgWatch_nolive_title{
+  padding: 2px 12px;
+}
+
+.pgWatch_nolive_shadul{
+  padding: 2px 12px;
+}
+
+.pgWatch_nolive_btnBack{
+  margin-top: 16px;
+  padding: 2px 12px;
+}
+
+
+
+
+
+/* ---------------------- Login Page  ------ */
+
+.login_continaer{
+  padding: 20px;
+}
+
+.login_continaer_logo{
+  height: auto;
+}
+
+.login_continaer_icon{
+  height: auto;
+}
+
+.login_continaer_heading{
+  padding: 2px 1px;
+}
+
+.login_continaer_moto{
+    padding: 6px 1px;
+    margin-bottom: 10px;
+
+}
+
+.login_continaer_form{
+  padding: 20px 10px;
+}
+
+.login_continaer_lable{
+  padding: 2px 1px;
+  margin: 8px 0px;
+}
+
+.login_continaer_input{
+  padding: 4px 1px;
+  margin: 8px 0px;
+}
+
+.login_continaer_button{
+  margin-top: 10px;
+  padding: 2px 1px;
+}
+
+
+/* ---------------------- Developer Admin Panel Dashoabrd ------ */
+
+.admndsb_continaer{
+  padding: 20px;
+}
+
+
+.admndsb_header{
+  padding: 20px;
+}
+
+.admndsb_header_logo{
+  padding: 20px;
+}
+
+.admndsb_header_title{
+  padding: 1px;
+}
+
+.admndsb_header_moto{
+  padding: 4px 0px;
+  color: #eab308 !important;
+}
+
+.admndsb_header_lupanel{
+  padding: 20px;
+}
+
+.admndsb_header_btnLupanel{
+  padding: 2px 0px;
+}
+
+
+
+.admndsb_body{
+  padding: 20px;
+}
+
+
+
+.admndsb_body_card{
+  padding: 30px 10px;
+  margin: 20px 0px;
+   
+}
+
+.admndsb_body_cardbox{
+  padding: 4px 2px;
+  width: 100%; 
+}
+
+.admndsb_body_card_icon{
+  padding: 1px 1px;
+  font-size: 42px;
+}
+
+.admndsb_body_card_title{
+ padding: 5px 1px;
+}
+
+.admndsb_body_card_count{
+  padding: 5px 1px;
+  font-size: 48px;
+}
+
+
+/* >>>> Stream List <<< */
+
+.admndsb_body_strmcontainer{
+  padding: 30px 10px;  
+}
+
+.admndsb_body_strmbody_live{
+  padding: 4px 10px; 
+}
+
+.admndsb_body_strmbody{
+  padding: 30px 10px;
+  margin: 20px 0px;   
+}
+
+.admndsb_body_strmbody_heading{
+  padding: 4px 10px;   
+}
+
+.admndsb_body_strmbody_url{
+  padding: 4px 10px;   
+}
+
+.admndsb_body_strmbody_title{
+  padding: 4px 10px;   
+}
+
+.admndsb_body_strmbody_btnbody{
+  padding: 8px 10px;   
+}
+
+
+
+/* ---------------------- Developer Add New  ------ */
+
+.admndsb_newstrm_heading{
+  padding: 8px 10px;   
+}
+
+.admndsb_newstrm_body{
+  padding: 20px 10px;
+
+}
+
+.admndsb_newstrm_body_title{
+  padding: 20px 2px 2px 2px;
+
+}
+
+.admndsb_newstrm_from{
+  padding: 4px 10px;   
+}
+
+.admndsb_newstrm_frombody{
+  padding: 4px 10px;   
+}
+
+.admndsb_newstrm_fromhdn{
+  padding: 4px 10px;   
+  margin-top: 8px;  
+}
+
+.admndsb_newstrm_lable{
+  padding: 4px 10px; 
+
+}
+
+.admndsb_newstrm_input{
+  padding: 4px 10px;   
+}
+
+.admndsb_newstrm_sport{
+  padding: 4px 10px;  
+  margin: 6px 2px; 
+}
+
+.admndsb_newstrm_btnbody{
+  padding: 8px 10px;   
+}
+
+
+
+
+/* ---------------------- Developer Edit  ------ */
+
+
+.admndsb_editstrm_main{
+  padding: 20px 20px;   
+}
+
+.admndsb_editstrm_mainheader{
+  padding: 4px 10px;   
+}
+
+.admndsb_editstrm_mainheaderLink{
+  padding: 4px 10px;   
+}
+
+
+.admndsb_editstrm_body{
+  padding: 4px 10px;   
+}
+
+.admndsb_editstrm_form{
+  padding: 4px 10px;   
+}
+
+.admndsb_editstrm_formbdy{
+  padding: 8px 2px;   
+}
+
+.admndsb_editstrm_formlable{
+  padding: 4px 10px;   
+}
+
+.admndsb_editstrm_forminput{
+  padding: 4px 10px;   
+}
+
+.admndsb_editstrm_formbtn{
+  padding: 4px 10px;   
+}
+
+.admndsb_editstrm_formbtn2{
+  padding: 4px 10px;   
+}
+
+.admndsb_editstrm_adctrbody{
+  padding: 12px 10px; 
+  margin-top: 20px;  
+}
+
+.admndsb_editstrm_adctrbody_title{
+  padding: 6px 10px;   
+}
+
+.admndsb_editstrm_adctrbody_moto{
+  padding: 8px 10px;   
+}
+
+
+
 
 
 

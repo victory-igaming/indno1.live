@@ -1,9 +1,9 @@
 import { Suspense } from "react";
-import HomeLivePlayer from "./components/HomeLivePlayer";
-import TrandingGame from './components/TrandingGame';
+import HomeLivePlayer from "@/components/HomeLivePlayer";
+import TrandingGame from '@/components/TrandingGame';
 import CasinoBets from '@/components/CasinoBets';
-import Sporttab from './components/sporttab';
-import BettingCTA from './components/BettingCTA';
+import Sporttab from '@/components/sporttab';
+import BettingCTA from '@/components/BettingCTA';
 
 const NEWS_TEXT = "LIVE BROADCAST CONNECTED • INDNO1 PLATFORM ONLINE • IT Team @ INDNO1 * 622 To ensure fund security and fulfill Anti-Money Laundering (AML) • compliance obligations, we must verify our users identities. This typically • involves submitting government-issued ID or proof of address • Providing authentic information is crucial to preventing account and fund freezing.";
 

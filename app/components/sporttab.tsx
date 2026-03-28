@@ -184,7 +184,7 @@ export default function SportsTabs() {
                         <span className="animate-pulse">●</span> LIVE
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1 text-amber-400/70 text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full border border-amber-800/40"
+                      <span className="flex items-center gap-1 text-amber-400/70 text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full border border-amber-800/40 spotab_menuitemcntent_btnupcome"
                         style={{ background: 'rgba(180,83,9,0.1)' }}>
                         ◷ Upcoming
                       </span>
@@ -192,7 +192,7 @@ export default function SportsTabs() {
                   </div>
 
                   {/* Title */}
-                  <p className="text-white font-bold text-sm leading-snug group-hover:text-amber-200 transition-colors line-clamp-2">
+                  <p className="text-white font-bold text-sm leading-snug group-hover:text-amber-200 transition-colors line-clamp-2 spotab_menuitemcntent_title">
                     {stream.title}
                   </p>
 
@@ -223,7 +223,7 @@ export default function SportsTabs() {
                 <div className="px-4 pb-4 flex gap-2">
                   <Link
                     href={`/watch/${stream.id}`}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-black uppercase tracking-wide text-white transition-all hover:opacity-90 spotab_menuitemcntent_btnlive"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-black uppercase tracking-wide text-white transition-all hover:opacity-90 spotab_menuitemcntent_btnwatch"
                     style={{
                       background: status === 'live'
                         ? 'linear-gradient(135deg, #dc2626, #991b1b)'

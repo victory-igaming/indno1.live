@@ -8,12 +8,16 @@ function createPool() {
   if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL environment variable is not set");
   }
+
+  // Determine SSL usage explicitly via env
+  const useSSL = process.env.DB_SSL === "true"; // set DB_SSL=true if DB supports SSL
+
   return new Pool({
     connectionString: process.env.DATABASE_URL,
     max: 10,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
-    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+    ssl: useSSL ? { rejectUnauthorized: false } : false,
   });
 }
 

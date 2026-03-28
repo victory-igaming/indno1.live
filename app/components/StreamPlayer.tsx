@@ -368,7 +368,7 @@ export default function StreamPlayer({
       {/* Live badge */}
       {stream.is_live && !activeAd && (
         <div className="absolute top-3 left-3 z-30 pointer-events-none ">
-          <span className="flex items-center gap-1 bg-red-600 text-white text-xs font-black uppercase px-2.5 py-1 rounded-full shadow-lg shadow-red-900/50">
+          <span className="flex items-center gap-1 bg-red-600 text-white text-xs font-black uppercase px-2.5 py-1 rounded-full shadow-lg shadow-red-900/50 indPlayer_txtLive">
             <span className="animate-pulse">●</span> LIVE
           </span>
         </div>
@@ -489,10 +489,10 @@ export default function StreamPlayer({
             }}
           >
             <div
-              className="text-white px-4 py-1.5 flex items-center justify-center font-black italic uppercase text-xs tracking-tighter whitespace-nowrap"
+              className="text-white px-4 py-1.5 flex items-center justify-center font-black italic uppercase text-xs tracking-tighter whitespace-nowrap indPlayer_txtNews"
               style={{ background: "linear-gradient(to right, #b45309, #c2410c)" }}
             >
-              <span className="animate-pulse mr-2">●</span> LIVE
+              <span className="animate-pulse mr-2">●</span> NEWS
             </div>
             <div className="flex-1 py-1.5 overflow-hidden whitespace-nowrap flex items-center">
               <motion.div
