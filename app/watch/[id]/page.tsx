@@ -32,6 +32,20 @@ async function getStreamData(id: string) {
   return { stream, overlays: overlaysRes.rows };
 }
 
+async function getNewsData() {
+  const streamId = 1;
+   const neswRes = await pool.query(
+    `SELECT id, title, sport_type, youtube_url, team1, team2, scheduled_at, is_live, is_active, ad_active, active_overlay_id
+     FROM streams WHERE is_live = $1`,
+    [streamId]
+  );
+
+  if (!neswRes.rows[0]) return null;
+ 
+  return { neswRes };
+}
+
+
 const SPORT_ICONS: Record<string, string> = {
   cricket: "🏏",
   football: "⚽",
@@ -111,6 +125,7 @@ function StatusScreen({ type, title, scheduledAt }: {
 export default async function WatchPage({ params }: Props) {
   const { id } = await params;
   const data = await getStreamData(id);
+  const datanws = await getNewsData();
   if (!data) notFound();
 
   const { stream, overlays } = data;

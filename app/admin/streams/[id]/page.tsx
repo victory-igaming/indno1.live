@@ -398,6 +398,7 @@ export default function EditStream({
               Title
             </label>
             <input
+              title="Title"
               type="text"
               value={stream.title}
               onChange={(e) => setStream({ ...stream, title: e.target.value })}
@@ -446,6 +447,7 @@ export default function EditStream({
               YouTube URL
             </label>
             <input
+              title="YouTube URL"
               type="url"
               value={stream.youtube_url}
               onChange={(e) =>
@@ -465,6 +467,7 @@ export default function EditStream({
                 Team 1
               </label>
               <input
+                title="Team 1"
                 type="text"
                 value={stream.team1 || ""}
                 onChange={(e) =>
@@ -483,6 +486,7 @@ export default function EditStream({
                 Team 2
               </label>
               <input
+                title="Team 2"
                 type="text"
                 value={stream.team2 || ""}
                 onChange={(e) =>
@@ -502,6 +506,7 @@ export default function EditStream({
               Scheduled Date &amp; Time
             </label>
             <input
+            title="Scheduled Date"
               type="datetime-local"
               value={
                 stream.scheduled_at

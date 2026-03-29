@@ -12,8 +12,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const sport = searchParams.get("sport");
 
-    let query = `SELECT id, title, sport_type, youtube_url, team1, team2, scheduled_at, is_live, is_active, created_at
-                 FROM streams`;
+    let query = `SELECT id, title, sport_type, youtube_url, team1, team2, scheduled_at, is_live, is_active, created_at FROM streams`;
     const params: string[] = [];
     if (sport && ALLOWED_SPORTS.includes(sport)) {
       query += " WHERE sport_type = $1";

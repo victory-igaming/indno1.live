@@ -4,10 +4,62 @@ import TrandingGame from '@/components/TrandingGame';
 import CasinoBets from '@/components/CasinoBets';
 import Sporttab from '@/components/sporttab';
 import BettingCTA from '@/components/BettingCTA';
+import pool from "@/lib/db";
 
-const NEWS_TEXT = "LIVE BROADCAST CONNECTED • INDNO1 PLATFORM ONLINE • IT Team @ INDNO1 * 622 To ensure fund security and fulfill Anti-Money Laundering (AML) • compliance obligations, we must verify our users identities. This typically • involves submitting government-issued ID or proof of address • Providing authentic information is crucial to preventing account and fund freezing.";
+const NEWS_Default = "LIVE BROADCAST CONNECTED • INDNO1 PLATFORM ONLINE • IT Team @ INDNO1 * 622 To ensure fund security and fulfill Anti-Money Laundering (AML) • compliance obligations, we must verify our users identities. This typically • involves submitting government-issued ID or proof of address • Providing authentic information is crucial to preventing account and fund freezing.";
 
-export default function Home() {
+
+
+async function getNewsData() {
+ try {
+    // We look for the most recent news item where is_live is TRUE
+  /*
+    const newsRes = await pool.query(
+      `SELECT id, title, newsbf, scheduled_at, is_live, ad_active 
+       FROM news 
+       WHERE is_live = true 
+       ORDER BY created_at DESC 
+       LIMIT 50`
+    );
+     if (newsRes.rowCount === 0) return null;
+    
+    return newsRes.rows[0];
+  */
+ 
+    const newsRes = await pool.query(
+  `SELECT STRING_AGG(newsbf, ' • ') as combined_news FROM news WHERE is_live = true`
+);
+
+ //console.log(" newsRes ",newsRes);
+   //const result = newsRes.rows[0].combined_news;
+   const tickerText = newsRes.rows[0]?.combined_news;
+    if (!tickerText) {
+      return NEWS_Default; // Fallback to your hardcoded text if DB is empty
+    }
+     
+   //console.log(" tickerText ",tickerText);
+    return tickerText;
+     
+  } catch (error) {
+    console.error("Error fetching news ticker:", error);
+    return null;
+  }
+}
+
+
+
+
+export default async function Home() {
+
+
+
+  const liveNews = await getNewsData();
+
+  const NEWS_TEXT = liveNews;
+
+  console.log(" NEWS_TEXT ",NEWS_TEXT);
+
+
   return (
     <main className="min-h-screen flex flex-col items-center p-3 sm:p-4 gap-6 sm:gap-8">
 
