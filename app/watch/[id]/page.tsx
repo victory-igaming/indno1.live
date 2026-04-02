@@ -6,6 +6,9 @@ import CasinoBets from '@/components/CasinoBets';
 import BettingCTA from "@/components/BettingCTA";
 import Link from "next/link";
 
+import BannerLeft from '@/components/BannerLeft';
+import BannerRight from '@/components/BannerRight';
+
 interface Props {
   params: Promise<{ id: string }>;
 }
@@ -43,6 +46,48 @@ async function getNewsData() {
   if (!neswRes.rows[0]) return null;
  
   return { neswRes };
+}
+
+ 
+  async function getBannerData() {
+   try {
+    // 1. Fetch all columns needed for the banner object
+    const bannersRes = await pool.query(
+      `SELECT id, image_url as img, target_url as link, position 
+       FROM banner 
+       WHERE is_live = true AND is_active = true`
+    );
+
+    // 2. Initialize the structure
+    const homeBanners = {
+      left: [],
+      right: []
+    };
+
+    // 3. Loop through the database rows and push to the correct side
+    bannersRes.rows.forEach(banner => {
+      if (banner.position === 'left') {
+        homeBanners.left.push(banner);
+      } else if (banner.position === 'right') {
+        homeBanners.right.push(banner);
+      }
+    });
+
+    // 4. Fallback: If both are empty, you can return your defaults
+    if (homeBanners.left.length === 0 && homeBanners.right.length === 0) {
+       return {
+         left: [{ id: 0, img: "/uploads/default-left.jpg", link: "#" }],
+         right: [{ id: 0, img: "/uploads/default-right.jpg", link: "#" }]
+       };
+    }
+
+    return homeBanners;
+
+  } catch (error) {
+    console.error("Error fetching banner data:", error);
+    return { left: [], right: [] }; // Return empty structure on error
+  }
+
 }
 
 
@@ -148,118 +193,110 @@ export default async function WatchPage({ params }: Props) {
     ? `${stream.team1} vs ${stream.team2}`
     : stream.team1 || stream.team2 || null;
 
-  return (
-    <div className="min-h-screen text-white" style={{ background: 'linear-gradient(to bottom, #1f0d04, #120803)' }}>
-      <div className="w-full max-w-5xl mx-auto px-4 py-6 flex flex-col items-center gap-5 justify-center pgWatch_maincontener">
+  //   const homeBanners = {
+  //   left: [{ id: 1, img: "/uploads/leftbanner.jpeg", link: "https://indno1.com" }],
+  //   right: [{ id: 2, img: "/uploads/rightbanner.jpeg", link: "https://indno1.win" }]
+  // };
 
-        {/* Back navigation */}
-        <div className="w-full pgWatch_btnBckTop">
-          <Link href="/" className="inline-flex items-center gap-2 text-amber-400/50 hover:text-amber-400 text-sm font-medium transition-colors pgWatch_btnBckLink">
-            ← Back to Home
-          </Link>
-        </div>
+ 
+ const homeBanners = await getBannerData();
 
-        {/* Match header — full width, styled card */}
-        <div className="w-full rounded-2xl overflow-hidden "
-          style={{ background: 'linear-gradient(135deg, #2e1408, #1a0a03)', border: '1px solid rgba(180,83,9,0.25)' }}>
-          {/* Accent top bar */}
-          <div className="h-0.5 w-full "
-            style={{
-              background: streamStatus === 'live'
-                ? 'linear-gradient(to right, #ef4444, #b91c1c)'
-                : 'linear-gradient(to right, #b45309, #c2410c)',
-            }}
-          />
-          <div className="px-5 py-4 flex items-start justify-between gap-4 flex-wrap pgWatch_top_conteiner">
-            <div className="flex items-start gap-3">
-              <div className="text-3xl mt-0.5">{icon}</div>
-              <div>
-                {/* Sport + status badges */}
-                <div className="flex items-center gap-2 flex-wrap mb-1.5 ">
-                  <span className="text-amber-400/70 text-[11px] uppercase tracking-widest font-bold px-2.5 py-0.5 rounded-full pgWatch_top_btnGame"
-                    style={{ background: 'rgba(180,83,9,0.15)', border: '1px solid rgba(180,83,9,0.25)' }}>
-                    {sportName}
-                  </span>
-                  {streamStatus === 'live' && (
-                    <span className="flex items-center gap-1 bg-red-600 text-white text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full shadow shadow-red-900/40 pgWatch_top_btnStatus">
-                      <span className="animate-pulse">●</span> LIVE
+ return (
+    <div className="min-h-screen text-white bg-[#120803]" style={{ background: 'linear-gradient(to bottom, #1f0d04, #120803)' }}>
+      
+      {/* 1. MAIN WRAPPER: Flex container for Banners + Content */}
+      <div className="relative w-full max-w-300 lg:max-w-400 mx-auto flex justify-center items-start px-8 lg:px-6">
+        
+        {/* --- LEFT BANNER (Desktop Only) --- */}
+        <aside className="hidden xl:block w-64 sticky top-24 h-fit py-4 -ml-10 transform -translate-x-10 lg:-translate-x-20">
+          <BannerLeft banners={homeBanners.left} />
+        </aside>
+
+        {/* --- CENTER MAIN CONTENT (Responsive) --- */}
+        <main className="flex-1 w-full max-w-5xl flex flex-col items-center gap-6 py-6">
+          
+          {/* Back navigation */}
+          <div className="w-full pgWatch_btnBckTop">
+            <Link href="/" className="inline-flex items-center gap-2 text-amber-400/50 hover:text-amber-400 text-sm font-medium transition-colors">
+              ← Back to Home
+            </Link>
+          </div>
+
+          {/* Match header */}
+          <div className="w-full rounded-2xl overflow-hidden "
+            style={{ background: 'linear-gradient(135deg, #2e1408, #1a0a03)', border: '1px solid rgba(180,83,9,0.25)' }}>
+            <div className="h-0.5 w-full "
+              style={{ background: streamStatus === 'live' ? 'linear-gradient(to right, #ef4444, #b91c1c)' : 'linear-gradient(to right, #b45309, #c2410c)' }}
+            />
+            <div className="px-5 py-4 flex items-start justify-between gap-4 flex-wrap pgWatch_top_conteiner">
+              <div className="flex items-start gap-3">
+                <div className="text-3xl mt-0.5">{icon}</div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                    <span className="text-amber-400/70 text-[11px] uppercase tracking-widest font-bold px-2.5 py-0.5 rounded-full pgWatch_top_btnGame"
+                      style={{ background: 'rgba(180,83,9,0.15)', border: '1px solid rgba(180,83,9,0.25)' }}>
+                      {sportName}
                     </span>
-                  )}
-                  {streamStatus === 'not-started' && (
-                    <span className="flex items-center gap-1 text-amber-400 text-[11px] font-bold uppercase px-2.5 py-0.5 rounded-full border border-amber-700/40 pgWatch_top_btnStatus"
-                      style={{ background: 'rgba(180,83,9,0.15)' }}>
-                      ◷ Upcoming
-                    </span>
-                  )}
-                  {streamStatus === 'ended' && (
-                    <span className="text-zinc-400 text-[11px] font-bold uppercase px-2.5 py-0.5 rounded-full border border-zinc-700/40 pgWatch_top_btnStatus"
-                      style={{ background: 'rgba(255,255,255,0.05)' }}>
-                      ■ Ended
-                    </span>
-                  )}
+                    {streamStatus === 'live' && (
+                      <span className="flex items-center gap-1 bg-red-600 text-white text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full shadow shadow-red-900/40 pgWatch_top_btnStatus">
+                        <span className="animate-pulse">●</span> LIVE
+                      </span>
+                    )}
+                  </div>
+                  <h1 className="text-white font-black text-lg sm:text-xl leading-tight mb-1 pgWatch_top_heading">{stream.title}</h1>
+                  {matchLabel && <p className="text-amber-300/50 text-sm font-medium pgWatch_top_title">{matchLabel}</p>}
                 </div>
-                <h1 className="text-white font-black text-lg sm:text-xl leading-tight mb-1 pgWatch_top_heading">{stream.title}</h1>
-                {matchLabel && (
-                  <p className="text-amber-300/50 text-sm font-medium pgWatch_top_title">{matchLabel}</p>
-                )}
-                {stream.scheduled_at && !stream.is_live && (
-                  <p className="text-amber-400/35 text-xs mt-1 flex items-center gap-1 pgWatch_top_shadul">
-                    <span>📅</span>
-                    {new Date(stream.scheduled_at).toLocaleString()}
-                  </p>
-                )}
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Player or Status Screen — full width */}
-        <div className="w-full">
-          {streamStatus === 'live' ? (
-            <div className="relative">
-              <div className="absolute -inset-1 rounded-2xl opacity-15 blur-2xl pointer-events-none"
-                style={{ background: 'radial-gradient(ellipse at center, #ca8a04, transparent 70%)' }} />
-              <div className="relative rounded-2xl overflow-hidden border shadow-2xl"
-                style={{ borderColor: 'rgba(180,83,9,0.3)' }}>
-                <StreamPlayer
-                  stream={stream}
-                  overlays={overlays}
-                  newsText="LIVE BROADCAST • INDNO1 PLATFORM ONLINE • Watch responsibly • Betting involves financial risk"
-                />
+          {/* Player or Status Screen */}
+          <div className="w-full">
+            {streamStatus === 'live' ? (
+              <div className="relative">
+                <div className="absolute -inset-1 rounded-2xl opacity-15 blur-2xl pointer-events-none"
+                  style={{ background: 'radial-gradient(ellipse at center, #ca8a04, transparent 70%)' }} />
+                <div className="relative rounded-2xl overflow-hidden border shadow-2xl"
+                  style={{ borderColor: 'rgba(180,83,9,0.3)' }}>
+                  <StreamPlayer
+                    stream={stream}
+                    overlays={overlays}
+                    newsText="LIVE BROADCAST • INDNO1 PLATFORM ONLINE • Watch responsibly"
+                  />
+                </div>
               </div>
-            </div>
-          ) : (
-            <StatusScreen
-              type={streamStatus === 'unavailable' ? 'unavailable' : streamStatus}
-              title={stream.title}
-              scheduledAt={stream.scheduled_at}
-            />
-          )}
-        </div>
+            ) : (
+              <StatusScreen
+                type={streamStatus === 'unavailable' ? 'unavailable' : streamStatus}
+                title={stream.title}
+                scheduledAt={stream.scheduled_at}
+              />
+            )}
+          </div>
 
-        {/* Betting CTA — always shown below the player/status */}
-        <div className="w-full">
-          <BettingCTA />
-        </div>
+          {/* Betting CTA */}
+          <div className="w-full">
+            <BettingCTA />
+          </div>
 
-
-     
-             
-
-      </div>
-
-
-         {/* Trending Games */}
-          <section style={{padding:"20px"}}>
-            <div className="flex items-center gap-3 mb-3 sm:mb-4">
+          {/* Trending Games Section */}
+          <section className="w-full mt-6">
+            <div className="flex items-center gap-3 mb-4">
               <div className="w-1 h-6 rounded-full" style={{ background: 'linear-gradient(to bottom, #fbbf24, #c2410c)' }} />
               <h2 className="text-white font-black text-base sm:text-lg uppercase tracking-wider">Trending Games</h2>
               <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, rgba(180,83,9,0.3), transparent)' }} />
             </div>
             <TrandingGame />
           </section>
+        </main>
 
+        {/* --- RIGHT BANNER (Desktop Only) --- */}
+        <aside className="hidden xl:block w-64 sticky top-24 h-fit py-4 -mr-10 transform translate-x-10">
+          <BannerRight banners={homeBanners.right} />
+        </aside>
 
+      </div>
     </div>
   );
+
 }

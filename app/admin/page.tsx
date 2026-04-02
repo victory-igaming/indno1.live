@@ -67,6 +67,7 @@ export default function AdminDashboard() {
         setAdminName(d.username);
         loadStreams();
         loadNews();
+        loadBanner();
       })
       .catch(() => router.push("/admin/login"));
   }, [router]);
@@ -85,8 +86,7 @@ export default function AdminDashboard() {
     }
   }
 
-
-  async function loadNews() {
+async function loadNews() {
     setLoading(true);
     try {
       // Note: Ensure your API route is now at /api/admin/news 
@@ -108,6 +108,32 @@ export default function AdminDashboard() {
       setLoading(false);
     }
 }
+
+
+
+  async function loadBanner() {
+    setLoading(true);
+    try {
+      // Note: Ensure your API route is now at /api/admin/news 
+      // to match your new database table logic.
+      const res = await fetch("/api/admin/banner");
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Failed to fetch banner");
+        return;
+      }
+
+      // Updated to match the array returned by your GET API
+      setBanners(data.banner); 
+    } catch (err) {
+      setError("Failed to load news");
+      console.error("News Load Error:", err);
+    } finally {
+      setLoading(false);
+    }
+}
+
 
   async function toggleLive(stream: Stream) {
     setTogglingId(stream.id);
@@ -176,7 +202,7 @@ export default function AdminDashboard() {
             { label: "Live Now", value: totalLive, icon: "🔴", color: "from-red-900/30 to-red-900/10", border: "border-red-800/30", pulse: totalLive > 0 },
             { label: "Active", value: totalActive, icon: "✅", color: "from-green-900/30 to-green-900/10", border: "border-green-800/30" },
             { label: "Sports", value: totalSports, icon: "🏆", color: "from-amber-900/30 to-amber-900/10", border: "border-amber-800/30" },
-           { label: "News", value: totalNews, icon: "🆕", color: "from-amber-900/30 to-amber-900/10", border: "border-amber-800/30" },
+           { label: "News", value: totalNews, icon: "🆕", color: "from-yellow-900/30 to-yellow-900/10", border: "border-yellow-800/30" },
           ].map((stat) => (
             <div
               key={stat.label}
@@ -362,9 +388,82 @@ export default function AdminDashboard() {
                         
                         </div>
 
-
+            {/* <Link
+              href="/admin/banner/new"
+              className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide px-4 py-2 rounded-xl transition-all admndsb_body_strmbody_live"
+              style={{
+                background: "linear-gradient(135deg, #dc2626, #b91c1c)",
+                color: "white",
+                boxShadow: "0 2px 12px rgba(220,38,38,0.3)",
+              }}
+            >
+              + New Banner
+            </Link> */}
                         
                       </div>
+{loading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-20 rounded-xl animate-pulse border border-zinc-800"
+                  style={{ background: "linear-gradient(135deg, #141414, #0f0f0f)" }} />
+              ))}
+            </div>
+          ) : banners.length === 0 ? (
+            <div
+              className="text-center py-16 rounded-xl border-2 border-dashed"
+              style={{ borderColor: "rgba(180,83,9,0.2)", background: "rgba(180,83,9,0.03)" }}
+            >
+              </div>
+               ) : (
+                <div className="space-y-2.5">
+                   {banners.map((banerss) => (
+                    <div
+                  key={banerss.id}
+                  className="rounded-xl border transition-all duration-200 admndsb_body_strmbody"
+                  style={{
+                    background: banerss.is_live
+                      ? "linear-gradient(135deg, #1f0707, #170404)"
+                      : "linear-gradient(135deg, #111111, #0d0d0d)",
+                    borderColor: banerss.is_live ? "rgba(220,38,38,0.4)" : "rgba(60,60,60,0.6)",
+                  }} >
+ <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4">
+{/* News info */}
+<div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+
+
+                        <span className="font-bold text-white text-sm truncate max-w-[200px] sm:max-w-xs admndsb_body_strmbody_heading">
+                          {banerss.title}
+                        </span>
+                        
+                        
+                         
+                        {/* Actions */}
+                         <div className="flex items-center gap-2 flex-wrap shrink-0">
+
+                           <Link
+                        href={`/admin/banner/${banerss.id}`}
+                        className="text-xs border border-zinc-700/60 hover:border-amber-700/50 text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg transition-all admndsb_body_strmbody_btnbody"
+                      >
+                        Edit 🛠️
+                      </Link>
+
+
+                    
+                          </div>
+
+
+                        </div>  
+
+                        </div>  
+  </div>
+                  
+                </div>
+                ))}
+                  
+                </div>
+                )}
+
                    </div>
                   
                   
@@ -397,7 +496,7 @@ export default function AdminDashboard() {
                   style={{ background: "linear-gradient(135deg, #141414, #0f0f0f)" }} />
               ))}
             </div>
-          ) : streams.length === 0 ? (
+          ) : news.length === 0 ? (
             <div
               className="text-center py-16 rounded-xl border-2 border-dashed"
               style={{ borderColor: "rgba(180,83,9,0.2)", background: "rgba(180,83,9,0.03)" }}

@@ -1,0 +1,327 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict aKyzNFfdv5KQYxrIc5W8Q2ZbKOYUnrfKfV3aMFVybDp9dPDJftirPm4Khe1zuv1
+
+-- Dumped from database version 18.3
+-- Dumped by pg_dump version 18.3
+
+-- Started on 2026-03-29 16:59:46
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 219 (class 1259 OID 16596)
+-- Name: admin_users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.admin_users (
+    id integer NOT NULL,
+    username character varying(255) NOT NULL,
+    password_hash text NOT NULL,
+    created_at timestamp with time zone
+);
+
+
+ALTER TABLE public.admin_users OWNER TO postgres;
+
+--
+-- TOC entry 225 (class 1259 OID 16647)
+-- Name: news; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.news (
+    id integer NOT NULL,
+    title character varying(255) NOT NULL,
+    newsbf text,
+    scheduled_at timestamp with time zone,
+    is_live boolean DEFAULT false,
+    is_active boolean DEFAULT true,
+    ad_active boolean DEFAULT false,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE public.news OWNER TO postgres;
+
+--
+-- TOC entry 224 (class 1259 OID 16646)
+-- Name: news_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.news_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.news_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 5052 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: news_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.news_id_seq OWNED BY public.news.id;
+
+
+--
+-- TOC entry 222 (class 1259 OID 16627)
+-- Name: overlays_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.overlays_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.overlays_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 16617)
+-- Name: overlays; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.overlays (
+    id integer DEFAULT nextval('public.overlays_id_seq'::regclass) NOT NULL,
+    stream_id integer,
+    type character varying(50),
+    image_url text,
+    "position" character varying(100),
+    width integer,
+    height integer,
+    opacity numeric(5,4),
+    ad_duration integer,
+    is_active boolean DEFAULT true,
+    display_order integer DEFAULT 0,
+    created_at timestamp with time zone,
+    pos_x numeric(10,2),
+    pos_y numeric(10,2)
+);
+
+
+ALTER TABLE public.overlays OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 16628)
+-- Name: streams_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.streams_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.streams_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 220 (class 1259 OID 16606)
+-- Name: streams; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.streams (
+    id integer DEFAULT nextval('public.streams_id_seq'::regclass) NOT NULL,
+    title text,
+    sport_type character varying(100),
+    youtube_url text,
+    team1 character varying(255),
+    team2 character varying(255),
+    scheduled_at timestamp with time zone,
+    is_live boolean DEFAULT false,
+    is_active boolean DEFAULT true,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
+    ad_active boolean DEFAULT false,
+    active_overlay_id integer
+);
+
+
+ALTER TABLE public.streams OWNER TO postgres;
+
+--
+-- TOC entry 4877 (class 2604 OID 16650)
+-- Name: news id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.news ALTER COLUMN id SET DEFAULT nextval('public.news_id_seq'::regclass);
+
+
+--
+-- TOC entry 5040 (class 0 OID 16596)
+-- Dependencies: 219
+-- Data for Name: admin_users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.admin_users (id, username, password_hash, created_at) FROM stdin;
+1	admin	$2b$12$8c4YLCKKLNspCSET8.BjSerPbmjSPSwWRKLXEp4MlidF51XEwM4ca	2026-03-26 11:03:16.959+05:30
+\.
+
+
+--
+-- TOC entry 5046 (class 0 OID 16647)
+-- Dependencies: 225
+-- Data for Name: news; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.news (id, title, newsbf, scheduled_at, is_live, is_active, ad_active, created_at) FROM stdin;
+1	Global Tech Summit 2026	Join us for the largest tech event of the year featuring AI breakthroughs.	2026-04-10 15:30:00+05:30	f	t	t	2026-03-29 10:57:56.909041+05:30
+3	Server Maintenance Notice	System will be down for 2 hours on Sunday for database optimization.	2026-03-30 07:30:00+05:30	f	t	f	2026-03-29 10:57:56.909041+05:30
+6	Coming Soon: Neon Casino	Get ready for a new immersive experience launching next month.	2026-05-01 14:30:00+05:30	f	t	t	2026-03-29 10:57:56.909041+05:30
+2	New UI Update Released	We have officially rolled out the Cyber-Luxury theme across all dashboards.	\N	f	t	f	2026-03-29 10:57:56.909041+05:30
+10	test new added ind	test news breaf add done	2026-03-29 16:27:00+05:30	t	t	f	2026-03-29 15:26:22.159333+05:30
+4	Weekly Tournament Results	Congratulations to the winners of the Sunday Rummy championship!	\N	t	t	t	2026-03-29 10:57:56.909041+05:30
+5	Security Protocol Update	Enhanced encryption is now active for all user betting profiles.	2026-03-31 18:17:00+05:30	t	t	f	2026-03-29 10:57:56.909041+05:30
+\.
+
+
+--
+-- TOC entry 5042 (class 0 OID 16617)
+-- Dependencies: 221
+-- Data for Name: overlays; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.overlays (id, stream_id, type, image_url, "position", width, height, opacity, ad_duration, is_active, display_order, created_at, pos_x, pos_y) FROM stdin;
+15	6	logo	/uploads/1774674870958-tml50yb027f.png	\N	162	107	0.9500	30	t	0	\N	0.80	2.12
+14	4	logo	/uploads/1774671262192-fnu82bvp9uw.png	\N	118	120	0.9500	30	f	0	\N	0.64	6.99
+17	5	ad	/uploads/1774778401446-ducmexpnm7.webp	\N	203	172	0.9500	30	f	0	\N	86.65	76.20
+18	5	ad	/uploads/1774778620657-ntlin4wcyd.jpeg	\N	369	392	0.9500	30	f	0	\N	80.06	-8.43
+16	4	ad	/uploads/1774778359865-dr94ivuqmy.webp	\N	1016	653	0.9500	30	t	0	\N	14.47	6.92
+13	5	logo	/uploads/1774671167567-hxclly1ukq.png	\N	161	109	0.9500	30	t	0	\N	-1.20	6.19
+\.
+
+
+--
+-- TOC entry 5041 (class 0 OID 16606)
+-- Dependencies: 220
+-- Data for Name: streams; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.streams (id, title, sport_type, youtube_url, team1, team2, scheduled_at, is_live, is_active, created_at, updated_at, ad_active, active_overlay_id) FROM stdin;
+4	Full Highlights | Quetta Gladiators vs Karachi Kings | Urdu | PSL 11 | Match 2 | MZB1H	cricket	https://www.youtube.com/watch?v=AhQGaZBp6Vw	Quetta Gladiators	Karachi Kings	2026-03-29 09:31:00+05:30	f	t	\N	2026-03-28 16:33:43.974557+05:30	f	\N
+6	SRH vs PBKS ipl Match Full Highlights 2026 | ipl 2026 Highlights	cricket	https://www.youtube.com/watch?v=cRFwcFtKGf0	SRH	PBKS	2026-03-28 19:20:00+05:30	f	t	\N	2026-03-29 12:39:30.707465+05:30	f	\N
+5	Highlights - Final Match | Legends League Cricket | Konark Suryas Odisha VS Royal Riders Punjab	cricket	https://www.youtube.com/watch?v=qwur984aaDA	Konark Suryas Odisha	Royal Riders Punjab	2026-03-29 17:30:00+05:30	t	t	\N	2026-03-29 12:39:31.927037+05:30	f	\N
+\.
+
+
+--
+-- TOC entry 5053 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: news_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.news_id_seq', 10, true);
+
+
+--
+-- TOC entry 5054 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: overlays_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.overlays_id_seq', 18, true);
+
+
+--
+-- TOC entry 5055 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: streams_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.streams_id_seq', 6, true);
+
+
+--
+-- TOC entry 4883 (class 2606 OID 16605)
+-- Name: admin_users admin_users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.admin_users
+    ADD CONSTRAINT admin_users_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4890 (class 2606 OID 16660)
+-- Name: news news_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.news
+    ADD CONSTRAINT news_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4887 (class 2606 OID 16626)
+-- Name: overlays overlays_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.overlays
+    ADD CONSTRAINT overlays_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4885 (class 2606 OID 16616)
+-- Name: streams streams_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.streams
+    ADD CONSTRAINT streams_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 4888 (class 1259 OID 16661)
+-- Name: idx_news_active; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_news_active ON public.news USING btree (is_active) WHERE (is_active = true);
+
+
+--
+-- TOC entry 4892 (class 2606 OID 16631)
+-- Name: overlays overlays_stream_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.overlays
+    ADD CONSTRAINT overlays_stream_id_fkey FOREIGN KEY (stream_id) REFERENCES public.streams(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 4891 (class 2606 OID 16636)
+-- Name: streams streams_active_overlay_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.streams
+    ADD CONSTRAINT streams_active_overlay_id_fkey FOREIGN KEY (active_overlay_id) REFERENCES public.overlays(id) ON DELETE SET NULL;
+
+
+-- Completed on 2026-03-29 16:59:46
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict aKyzNFfdv5KQYxrIc5W8Q2ZbKOYUnrfKfV3aMFVybDp9dPDJftirPm4Khe1zuv1
+
