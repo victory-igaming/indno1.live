@@ -9,19 +9,56 @@ import Link from "next/link";
 import BannerLeft from '@/components/BannerLeft';
 import BannerRight from '@/components/BannerRight';
 
+import TopNewsPoint from '@/components/NewsAlert';
+
 interface Props {
   params: Promise<{ id: string }>;
 }
+
+interface Banner {
+  id: number;
+  title: string;
+  position: string;
+  image_url?: string;
+  target_url?: string;
+  scheduled_at?: string;
+  is_live?: boolean;
+  is_active?: boolean;
+  ad_active?: boolean;
+  created_at?: string;
+}
+
+const NEWS_Default = "LIVE BROADCAST CONNECTED • INDNO1 PLATFORM ONLINE • IT Team @ INDNO1 * 622 To ensure fund security and fulfill Anti-Money Laundering (AML) • compliance obligations, we must verify our users identities. This typically • involves submitting government-issued ID or proof of address • Providing authentic information is crucial to preventing account and fund freezing.";
+
 
 async function getStreamData(id: string) {
   const streamId = parseInt(id, 10);
   if (isNaN(streamId)) return null;
 
-  const streamRes = await pool.query(
-    `SELECT id, title, sport_type, youtube_url, team1, team2, scheduled_at, is_live, is_active, ad_active, active_overlay_id
-     FROM streams WHERE id = $1`,
-    [streamId]
-  );
+const streamRes = await pool.query(
+  `
+  SELECT
+    id,
+    title,
+    sport_type,
+    source_type,
+    youtube_url,
+    obs_stream_url,
+    team1,
+    team2,
+    scheduled_at,
+    is_live,
+    is_active,
+    ad_active,
+    active_overlay_id,
+    created_at,
+    updated_at
+  FROM streams
+  WHERE id = $1
+  LIMIT 1
+  `,
+  [streamId]
+);
   if (!streamRes.rows[0]) return null;
 
   const stream = streamRes.rows[0];
@@ -48,6 +85,44 @@ async function getNewsData() {
   return { neswRes };
 }
 
+
+async function getNewsTopData() {
+ try {
+    // We look for the most recent news item where is_live is TRUE
+  /*
+    const newsRes = await pool.query(
+      `SELECT id, title, newsbf, scheduled_at, is_live, ad_active 
+       FROM news 
+       WHERE is_live = true 
+       ORDER BY created_at DESC 
+       LIMIT 50`
+    );
+     if (newsRes.rowCount === 0) return null;
+    
+    return newsRes.rows[0];
+  */
+  const newsRes = await pool.query(
+      `SELECT STRING_AGG(newsbf, ' • ') as combined_news FROM news WHERE is_live = true`
+    );
+
+   
+
+ //console.log(" newsRes ",newsRes);
+   //const result = newsRes.rows[0].combined_news;
+   const tickerText = newsRes.rows[0]?.combined_news;
+    if (!tickerText) {
+      return NEWS_Default; // Fallback to your hardcoded text if DB is empty
+    }
+     
+   console.log(" News DB ",tickerText);
+    return tickerText;
+     
+  } catch (error) {
+    console.error("Error fetching news ticker:", error);
+    return null;
+  }
+}
+
  
   async function getBannerData() {
    try {
@@ -59,10 +134,7 @@ async function getNewsData() {
     );
 
     // 2. Initialize the structure
-    const homeBanners = {
-      left: [],
-      right: []
-    };
+  const homeBanners: { left: Banner[]; right: Banner[] } = { left: [], right: [] };
 
     // 3. Loop through the database rows and push to the correct side
     bannersRes.rows.forEach(banner => {
@@ -200,8 +272,19 @@ export default async function WatchPage({ params }: Props) {
 
  
  const homeBanners = await getBannerData();
+const homeNews = await getNewsTopData();
+ 
+
+ const NEWS_TEXT = homeNews;
 
  return (
+  <>
+
+   {/* Hero section with live player */}
+      <section className="w-full max-w-5xl mx-auto pt-3 sm:pt-4">
+            <TopNewsPoint newsText={NEWS_TEXT}/>
+        </section>   
+
     <div className="min-h-screen text-white bg-[#120803]" style={{ background: 'linear-gradient(to bottom, #1f0d04, #120803)' }}>
       
       {/* 1. MAIN WRAPPER: Flex container for Banners + Content */}
@@ -297,6 +380,8 @@ export default async function WatchPage({ params }: Props) {
 
       </div>
     </div>
+
+    </>
   );
 
 }

@@ -9,9 +9,22 @@ import pool from "@/lib/db";
 import BannerLeft from '@/components/BannerLeft';
 import BannerRight from '@/components/BannerRight';
 
+import TopNewsPoint from '@/components/NewsAlert';
+
 const NEWS_Default = "LIVE BROADCAST CONNECTED • INDNO1 PLATFORM ONLINE • IT Team @ INDNO1 * 622 To ensure fund security and fulfill Anti-Money Laundering (AML) • compliance obligations, we must verify our users identities. This typically • involves submitting government-issued ID or proof of address • Providing authentic information is crucial to preventing account and fund freezing.";
 
-
+interface Banner {
+  id: number;
+  title: string;
+  position: string;
+  image_url?: string;
+  target_url?: string;
+  scheduled_at?: string;
+  is_live?: boolean;
+  is_active?: boolean;
+  ad_active?: boolean;
+  created_at?: string;
+}
 
 async function getNewsData() {
  try {
@@ -41,7 +54,7 @@ async function getNewsData() {
       return NEWS_Default; // Fallback to your hardcoded text if DB is empty
     }
      
-   //console.log(" tickerText ",tickerText);
+   console.log(" News DB ",tickerText);
     return tickerText;
      
   } catch (error) {
@@ -67,10 +80,12 @@ async function getNewsData() {
     );
 
     // 2. Initialize the structure
-    const homeBanners = {
-      left: [],
-      right: []
-    };
+    // const homeBanners = {
+    //   left: [],
+    //   right: []
+    // };
+
+    const homeBanners: { left: Banner[]; right: Banner[] } = { left: [], right: [] };
 
     // 3. Loop through the database rows and push to the correct side
     bannersRes.rows.forEach(banner => {
@@ -80,7 +95,7 @@ async function getNewsData() {
         homeBanners.right.push(banner);
       }
     });
-
+ console.log(" Banners Db ",bannersRes.rows);
     // 4. Fallback: If both are empty, you can return your defaults
     if (homeBanners.left.length === 0 && homeBanners.right.length === 0) {
        return {
@@ -101,20 +116,27 @@ async function getNewsData() {
 
 export default async function Home() {
 
+const liveNews = await getNewsData();
 
+const NEWS_TEXT = liveNews;
 
-  const liveNews = await getNewsData();
+//console.log(" NEWS_TEXT ",NEWS_TEXT);
 
-  const NEWS_TEXT = liveNews;
-
-  //console.log(" NEWS_TEXT ",NEWS_TEXT);
-
- const homeBanners = await getBannerData();
+const homeBanners = await getBannerData();
 
 
   return (
+<>
+
+ {/* Hero section with live player */}
+      <section className="w-full max-w-5xl mx-auto pt-3 sm:pt-4">
+            <TopNewsPoint newsText={NEWS_TEXT}/>
+        </section>    
+
 
     <div className="relative w-full max-w-400 mx-auto flex justify-center items-start px-4">
+
+       
 
       {/* BannerLeft */}
         <aside className="hidden xl:block w-65 sticky top-20 h-fit py-4 transform -translate-x-20">
@@ -122,7 +144,9 @@ export default async function Home() {
         </aside>
 
    
-    <main className="min-h-screen flex flex-col items-center p-3 sm:p-4 gap-6 sm:gap-8 max-w-5xl">       
+    <main className="min-h-screen flex flex-col items-center p-3 sm:p-4 gap-6 sm:gap-8 max-w-5xl">  
+
+      
 
       {/* Hero section with live player */}
       <section className="w-full max-w-5xl mx-auto pt-3 sm:pt-4">
@@ -176,10 +200,6 @@ export default async function Home() {
 
       </div>
 
-     
-
-
-
     </main>
 
           {/* BannerRight */}         
@@ -188,5 +208,7 @@ export default async function Home() {
       </aside>
 
      </div>
+
+     </>
   );
 }

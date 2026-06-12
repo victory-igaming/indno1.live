@@ -2,6 +2,7 @@
 import React, { useState, useEffect,useMemo } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
+import Hls from "hls.js";
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false }) as any;
 
@@ -19,7 +20,7 @@ const NewsVideoPlayer = ({ url, newsText }: NewsVideoProps) => {
 
   //const newsDuration = newsText? Math.round(newsText.length * .8) : 20;
   const newsDuration = Math.trunc(newsText.length * 0.25) || 20;
-  console.log ("newsDuration", newsDuration);
+  //console.log ("newsDuration", newsDuration);
 
   const handleCentralButtonClick = () => {
     if (clickCount === 0) {

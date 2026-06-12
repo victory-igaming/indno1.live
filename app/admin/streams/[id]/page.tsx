@@ -31,7 +31,9 @@ interface Stream {
   id: number;
   title: string;
   sport_type: string;
-  youtube_url: string;
+  source_type: "youtube" | "obs";
+  youtube_url?: string | null;
+  obs_stream_url?: string | null;
   team1?: string;
   team2?: string;
   scheduled_at?: string;
@@ -55,6 +57,8 @@ export default function EditStream({
   const [overlays, setOverlays] = useState<Overlay[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [switchingSource, setSwitchingSource] = useState(false);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [adminName, setAdminName] = useState("");
@@ -76,6 +80,7 @@ export default function EditStream({
   const [uploadingFile, setUploadingFile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [togglingAd, setTogglingAd] = useState(false);
+
 
   useEffect(() => {
    fetch("/api/auth/me")
@@ -100,7 +105,14 @@ export default function EditStream({
         return;
       }
       const streamData = await streamRes.json();
-      setStream(streamData.stream);
+      setStream({
+        ...streamData.stream,
+        source_type: streamData.stream?.source_type || "youtube",
+        youtube_url: streamData.stream?.youtube_url || "",
+        obs_stream_url:
+          streamData.stream?.obs_stream_url ||
+          "http://localhost:8090/live/stream.m3u8",
+      });
 
       if (overlaysRes.ok) {
         const overlaysData = await overlaysRes.json();
@@ -125,32 +137,150 @@ export default function EditStream({
     }
   }
 
-  async function saveStream(e: FormEvent) {
-    e.preventDefault();
-    if (!stream) return;
-    setSaving(true);
-    setError("");
-    setSuccess("");
-    try {
-      const res = await fetch(`/api/admin/streams/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(stream),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error);
-        return;
-      }
-      setStream(data.stream);
-      setSuccess("Saved!");
-      setTimeout(() => setSuccess(""), 2000);
-    } catch {
-      setError("Network error");
-    } finally {
-      setSaving(false);
+  async function updateStreamSource(nextSourceType: "youtube" | "obs") {
+  if (!stream) return;
+
+  setSwitchingSource(true);
+  setError("");
+  setSuccess("");
+
+  const nextYoutubeUrl =
+    nextSourceType === "youtube"
+      ? stream.youtube_url || "https://www.youtube.com/watch?v=YOffcnqjNAM"
+      : null;
+
+  const nextObsStreamUrl =
+    nextSourceType === "obs"
+      ? stream.obs_stream_url || "http://localhost:8090/hls/demo123.m3u8"
+      : null;
+
+  const nextStream = {
+    ...stream,
+    source_type: nextSourceType,
+    youtube_url: nextYoutubeUrl,
+    obs_stream_url: nextObsStreamUrl,
+  };
+
+  // Update UI immediately
+  setStream(nextStream);
+
+  try {
+    const res = await fetch(`/api/admin/streams/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: nextStream.title,
+        sport_type: nextStream.sport_type,
+        source_type: nextSourceType,
+        youtube_url: nextYoutubeUrl,
+        obs_stream_url: nextObsStreamUrl,
+        team1: nextStream.team1 || null,
+        team2: nextStream.team2 || null,
+        scheduled_at: nextStream.scheduled_at || null,
+        is_live: Boolean(nextStream.is_live),
+        is_active: nextStream.is_active !== false,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error || "Failed to update stream source");
+      return;
     }
+
+    setStream({
+      ...data.stream,
+      source_type: data.stream.source_type || "youtube",
+      youtube_url: data.stream.youtube_url || "",
+      obs_stream_url:
+        data.stream.obs_stream_url || "http://localhost:8090/hls/demo123.m3u8",
+    });
+
+    setSuccess(
+      nextSourceType === "youtube"
+        ? "Switched to YouTube stream"
+        : "Switched to OBS live stream",
+    );
+
+    setTimeout(() => setSuccess(""), 2000);
+  } catch {
+    setError("Network error while switching stream source");
+  } finally {
+    setSwitchingSource(false);
   }
+}
+
+  async function saveStream(e: FormEvent) {
+  e.preventDefault();
+
+  if (!stream) return;
+
+  setSaving(true);
+  setError("");
+  setSuccess("");
+
+  const finalSourceType =
+    stream.source_type === "obs" || stream.source_type === "youtube"
+      ? stream.source_type
+      : "youtube";
+
+  const payload = {
+    title: stream.title,
+    sport_type: stream.sport_type,
+    source_type: finalSourceType,
+
+    youtube_url:
+      finalSourceType === "youtube"
+        ? stream.youtube_url || "https://www.youtube.com/watch?v=YOffcnqjNAM"
+        : null,
+
+    obs_stream_url:
+      finalSourceType === "obs"
+        ? stream.obs_stream_url || "http://localhost:8090/hls/demo123.m3u8"
+        : null,
+
+    team1: stream.team1 || null,
+    team2: stream.team2 || null,
+    scheduled_at: stream.scheduled_at || null,
+    is_live: Boolean(stream.is_live),
+    is_active: stream.is_active !== false,
+  };
+
+  console.log("SAVE STREAM PAYLOAD:", payload);
+
+  try {
+    const res = await fetch(`/api/admin/streams/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error || "Failed to save stream");
+      return;
+    }
+
+    setStream({
+      ...data.stream,
+      source_type: data.stream.source_type || "youtube",
+      youtube_url: data.stream.youtube_url || "",
+      obs_stream_url:
+        data.stream.obs_stream_url || "http://localhost:8090/hls/demo123.m3u8",
+    });
+
+    setSuccess("Saved!");
+    setTimeout(() => setSuccess(""), 2000);
+  } catch {
+    setError("Network error");
+  } finally {
+    setSaving(false);
+  }
+}
+
+
   function formatNumber(value: unknown, fallback = "0") {
     const n = Number(value);
     return Number.isFinite(n) ? n.toFixed(0) : fallback;
@@ -444,23 +574,104 @@ export default function EditStream({
           </div>
           <div className="admndsb_editstrm_formbdy">
             <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2 admndsb_editstrm_formlable">
-              YouTube URL
+              Stream Source
             </label>
-            <input
-              title="YouTube URL"
-              type="url"
-              value={stream.youtube_url}
-              onChange={(e) =>
-                setStream({ ...stream, youtube_url: e.target.value })
-              }
-              required
-              className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none admndsb_editstrm_forminput"
-              style={{
-                background: "rgba(0,0,0,0.35)",
-                border: "1px solid rgba(180,83,9,0.3)",
-              }}
-            />
+
+            <div className="grid grid-cols-2 gap-3">
+             <button
+  type="button"
+  onClick={() =>
+    setStream({
+      ...stream,
+      source_type: "youtube",
+      youtube_url:
+        stream.youtube_url || "https://www.youtube.com/watch?v=YOffcnqjNAM",
+      obs_stream_url: null,
+    })
+  }
+  className={`py-3 rounded-lg text-sm font-bold border transition-colors ${
+    stream.source_type === "youtube"
+      ? "border-red-500 bg-red-600/20 text-red-400"
+      : "border-amber-900/30 bg-black/20 text-amber-300/50 hover:border-amber-700/50"
+  } admndsb_editstrm_forminput`}
+>
+  ▶ YouTube Stream
+</button>
+
+             <button
+  type="button"
+  onClick={() =>
+    setStream({
+      ...stream,
+      source_type: "obs",
+      youtube_url: null,
+      obs_stream_url:
+        stream.obs_stream_url || "http://localhost:8090/hls/demo123.m3u8",
+    })
+  }
+  className={`py-3 rounded-lg text-sm font-bold border transition-colors ${
+    stream.source_type === "obs"
+      ? "border-red-500 bg-red-600/20 text-red-400"
+      : "border-amber-900/30 bg-black/20 text-amber-300/50 hover:border-amber-700/50"
+  } admndsb_editstrm_forminput`}
+>
+  🔴 OBS Live Stream
+</button>
+            </div>
+
+            <p className="text-amber-300/30 text-xs mt-2">
+              YouTube uses a normal YouTube URL. OBS uses your HLS .m3u8 stream URL.
+            </p>
           </div>
+
+          {stream.source_type === "youtube" && (
+            <div className="admndsb_editstrm_formbdy">
+              <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2 admndsb_editstrm_formlable">
+                YouTube URL
+              </label>
+              <input
+                title="YouTube URL"
+                type="url"
+                value={stream.youtube_url || ""}
+                onChange={(e) =>
+                  setStream({ ...stream, youtube_url: e.target.value })
+                }
+                required={stream.source_type === "youtube"}
+                className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none admndsb_editstrm_forminput"
+                placeholder="https://www.youtube.com/watch?v=..."
+                style={{
+                  background: "rgba(0,0,0,0.35)",
+                  border: "1px solid rgba(180,83,9,0.3)",
+                }}
+              />
+            </div>
+          )}
+
+          {stream.source_type === "obs" && (
+            <div className="admndsb_editstrm_formbdy">
+              <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2 admndsb_editstrm_formlable">
+                OBS HLS Stream URL
+              </label>
+              <input
+                title="OBS HLS Stream URL"
+                type="url"
+                value={stream.obs_stream_url || ""}
+                onChange={(e) =>
+                  setStream({ ...stream, obs_stream_url: e.target.value })
+                }
+                required={stream.source_type === "obs"}
+                className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none admndsb_editstrm_forminput"
+                placeholder="http://62.171.169.111:8090/live/stream.m3u8"
+                style={{
+                  background: "rgba(0,0,0,0.35)",
+                  border: "1px solid rgba(180,83,9,0.3)",
+                }}
+              />
+              <p className="text-amber-300/30 text-xs mt-1">
+                Local test URL: http://62.171.169.111:8090/live/stream.m3u8
+              </p>
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-4">
             <div className="admndsb_editstrm_formbdy">
               <label className="block text-amber-300/50 text-xs uppercase tracking-widest mb-2 admndsb_editstrm_formlable">
@@ -673,13 +884,15 @@ export default function EditStream({
           <h2 className="font-bold uppercase tracking-widest text-xs text-amber-400/60 admndsb_editstrm_adctrbody_title ">
             Overlay Editor
           </h2>
-          <DraggableOverlayEditor
-            overlays={overlays}
-            onPositionChange={handlePositionChange}
-            onSizeChange={handleSizeChange}
-            activeAdId={stream.active_overlay_id || null}
-            youtubeUrl={stream.youtube_url}
-          />
+         <DraggableOverlayEditor
+  overlays={overlays}
+  onPositionChange={handlePositionChange}
+  onSizeChange={handleSizeChange}
+  activeAdId={stream.active_overlay_id || null}
+  sourceType={stream.source_type || "youtube"}
+  youtubeUrl={stream.youtube_url || ""}
+  obsStreamUrl={stream.obs_stream_url || ""}
+/>
 
           {/* Overlay list */}
           {overlays.length > 0 && (

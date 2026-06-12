@@ -3,71 +3,222 @@ import pool from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
 
 const ALLOWED_SPORTS = ["cricket", "football", "basketball", "tennis", "other"];
+const ALLOWED_SOURCE_TYPES = ["youtube", "obs"];
 
 export async function GET(req: NextRequest) {
   const user = await getSessionUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   try {
     const { searchParams } = new URL(req.url);
     const sport = searchParams.get("sport");
 
-    let query = `SELECT id, title, sport_type, youtube_url, team1, team2, scheduled_at, is_live, is_active, created_at FROM streams`;
+    let query = `
+      SELECT 
+        id,
+        title,
+        sport_type,
+        source_type,
+        youtube_url,
+        obs_stream_url,
+        team1,
+        team2,
+        scheduled_at,
+        is_live,
+        is_active,
+        created_at,
+        updated_at
+      FROM streams
+    `;
+
     const params: string[] = [];
+
     if (sport && ALLOWED_SPORTS.includes(sport)) {
       query += " WHERE sport_type = $1";
       params.push(sport);
     }
+
     query += " ORDER BY created_at DESC";
 
     const result = await pool.query(query, params);
+
     return NextResponse.json({ streams: result.rows });
-  } catch {
+  } catch (error) {
+    console.error("GET streams error:", error);
+
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
   const user = await getSessionUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   try {
     const body = await req.json();
-    const { title, sport_type, youtube_url, team1, team2, scheduled_at, is_live } = body;
 
-    if (!title || !sport_type || !youtube_url) {
-      return NextResponse.json({ error: "title, sport_type and youtube_url are required" }, { status: 400 });
+    const {
+      title,
+      sport_type,
+      source_type = "youtube",
+      youtube_url,
+      obs_stream_url,
+      team1,
+      team2,
+      scheduled_at,
+      is_live,
+    } = body;
+
+    const finalSourceType = source_type || "youtube";
+
+    if (!title || !sport_type) {
+      return NextResponse.json(
+        { error: "title and sport_type are required" },
+        { status: 400 }
+      );
     }
+
     if (!ALLOWED_SPORTS.includes(sport_type)) {
-      return NextResponse.json({ error: "Invalid sport type" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid sport type" },
+        { status: 400 }
+      );
     }
-    if (typeof title !== "string" || title.length > 255) {
-      return NextResponse.json({ error: "Invalid title" }, { status: 400 });
+
+    if (!ALLOWED_SOURCE_TYPES.includes(finalSourceType)) {
+      return NextResponse.json(
+        { error: "Invalid stream source type" },
+        { status: 400 }
+      );
     }
-    try { new URL(youtube_url); } catch {
-      return NextResponse.json({ error: "Invalid YouTube URL" }, { status: 400 });
+
+    if (typeof title !== "string" || title.trim().length === 0 || title.length > 255) {
+      return NextResponse.json(
+        { error: "Invalid title" },
+        { status: 400 }
+      );
     }
-    if (!youtube_url.includes("youtube.com") && !youtube_url.includes("youtu.be")) {
-      return NextResponse.json({ error: "URL must be a YouTube URL" }, { status: 400 });
+
+    let finalYoutubeUrl: string | null = null;
+    let finalObsStreamUrl: string | null = null;
+
+    if (finalSourceType === "youtube") {
+      if (!youtube_url) {
+        return NextResponse.json(
+          { error: "YouTube URL is required" },
+          { status: 400 }
+        );
+      }
+
+      try {
+        new URL(youtube_url);
+      } catch {
+        return NextResponse.json(
+          { error: "Invalid YouTube URL" },
+          { status: 400 }
+        );
+      }
+
+      if (!youtube_url.includes("youtube.com") && !youtube_url.includes("youtu.be")) {
+        return NextResponse.json(
+          { error: "URL must be a YouTube URL" },
+          { status: 400 }
+        );
+      }
+
+      finalYoutubeUrl = youtube_url.trim();
+    }
+
+    if (finalSourceType === "obs") {
+      if (!obs_stream_url) {
+        return NextResponse.json(
+          { error: "OBS stream URL is required" },
+          { status: 400 }
+        );
+      }
+
+      try {
+        new URL(obs_stream_url);
+      } catch {
+        return NextResponse.json(
+          { error: "Invalid OBS stream URL" },
+          { status: 400 }
+        );
+      }
+
+      if (!obs_stream_url.includes(".m3u8")) {
+        return NextResponse.json(
+          { error: "OBS stream URL must be an HLS .m3u8 URL" },
+          { status: 400 }
+        );
+      }
+
+      finalObsStreamUrl = obs_stream_url.trim();
+    }
+
+    /**
+     * If this stream goes live now,
+     * turn off all other live streams first.
+     */
+    if (is_live === true) {
+      await pool.query(`UPDATE streams SET is_live = false`);
     }
 
     const result = await pool.query(
-      `INSERT INTO streams (title, sport_type, youtube_url, team1, team2, scheduled_at, is_live)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING id, title, sport_type, youtube_url, team1, team2, scheduled_at, is_live`,
+      `
+      INSERT INTO streams (
+        title,
+        sport_type,
+        source_type,
+        youtube_url,
+        obs_stream_url,
+        team1,
+        team2,
+        scheduled_at,
+        is_live,
+        is_active,
+        created_at,
+        updated_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, true, NOW(), NOW())
+      RETURNING 
+        id,
+        title,
+        sport_type,
+        source_type,
+        youtube_url,
+        obs_stream_url,
+        team1,
+        team2,
+        scheduled_at,
+        is_live,
+        is_active,
+        created_at,
+        updated_at
+      `,
       [
         title.trim(),
         sport_type,
-        youtube_url.trim(),
+        finalSourceType,
+        finalYoutubeUrl,
+        finalObsStreamUrl,
         team1?.trim() || null,
         team2?.trim() || null,
         scheduled_at || null,
-        !!is_live,
+        is_live === true,
       ]
     );
 
     return NextResponse.json({ stream: result.rows[0] }, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error("POST streams error:", error);
+
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

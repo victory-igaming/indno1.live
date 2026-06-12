@@ -1,5 +1,7 @@
 "use client";
+
 import React, { useRef, useState, useCallback, useEffect } from "react";
+import Hls from "hls.js";
 
 interface Overlay {
   id: number;
@@ -19,7 +21,10 @@ interface Props {
   onPositionChange: (id: number, pos_x: number, pos_y: number) => void;
   onSizeChange: (id: number, width: number, height: number) => void;
   activeAdId: number | null;
-  youtubeUrl?: string;
+
+  sourceType?: "youtube" | "obs";
+  youtubeUrl?: string | null;
+  obsStreamUrl?: string | null;
 }
 
 const TYPE_COLORS = {
@@ -34,15 +39,29 @@ const TYPE_LABELS = {
   banner: "🖼️ Banner",
 };
 
-function extractYouTubeId(url: string): string | null {
+function extractYouTubeId(url?: string | null): string | null {
   if (!url) return null;
+
   try {
     const parsed = new URL(url);
-    if (parsed.hostname.includes("youtu.be")) return parsed.pathname.slice(1);
+
+    if (parsed.hostname.includes("youtu.be")) {
+      return parsed.pathname.slice(1);
+    }
+
+    if (parsed.pathname.includes("/embed/")) {
+      const parts = parsed.pathname.split("/");
+      return parts[parts.length - 1] || null;
+    }
+
     return parsed.searchParams.get("v");
   } catch {
     return null;
   }
+}
+
+function isVideo(url: string) {
+  return /\.(mp4|webm)(\?|$)/i.test(url);
 }
 
 interface DragState {
@@ -67,15 +86,64 @@ interface ResizeState {
   containerH: number;
 }
 
-// Reference width used in StreamPlayer for scale calculations
 const REFERENCE_WIDTH = 1280;
+
+function ObsPreview({ src }: { src: string }) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (!video || !src) return;
+
+    let hls: Hls | null = null;
+
+    if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = src;
+      video.play().catch(() => {});
+    } else if (Hls.isSupported()) {
+      hls = new Hls({
+        liveSyncDurationCount: 3,
+        enableWorker: true,
+      });
+
+      hls.loadSource(src);
+      hls.attachMedia(video);
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play().catch(() => {});
+      });
+
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        console.error("DraggableOverlayEditor HLS error:", data);
+      });
+    }
+
+    return () => {
+      if (hls) hls.destroy();
+    };
+  }, [src]);
+
+  return (
+    <video
+      ref={videoRef}
+      className="absolute inset-0 h-full w-full bg-black object-contain"
+      autoPlay
+      muted
+      playsInline
+      controls={false}
+    />
+  );
+}
 
 export default function DraggableOverlayEditor({
   overlays,
   onPositionChange,
   onSizeChange,
   activeAdId,
+  sourceType = "youtube",
   youtubeUrl,
+  obsStreamUrl,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<DragState | null>(null);
@@ -83,25 +151,32 @@ export default function DraggableOverlayEditor({
 
   const [selected, setSelected] = useState<number | null>(null);
   const [showStream, setShowStream] = useState(true);
-  // Track real container width so overlay sizes match StreamPlayer's scale factor
   const [containerWidth, setContainerWidth] = useState(0);
 
-  const videoId = extractYouTubeId(youtubeUrl || "");
-  const embedUrl = videoId
-    ? `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&modestbranding=1&rel=0&controls=0&showinfo=0&iv_load_policy=3&cc_load_policy=0&disablekb=1&fs=0&playsinline=1`
-    : null;
+  const isObs = sourceType === "obs";
+  const isYouTube = sourceType === "youtube";
 
-  // Keep containerWidth in sync using ResizeObserver — same approach as StreamPlayer
+  const videoId = isYouTube ? extractYouTubeId(youtubeUrl) : null;
+
+  const embedUrl =
+    isYouTube && videoId
+      ? `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&modestbranding=1&rel=0&controls=0&showinfo=0&iv_load_policy=3&cc_load_policy=0&disablekb=1&fs=0&playsinline=1`
+      : null;
+
   useEffect(() => {
     const el = containerRef.current;
+
     if (!el) return;
+
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         setContainerWidth(entry.contentRect.width);
       }
     });
+
     ro.observe(el);
     setContainerWidth(el.getBoundingClientRect().width);
+
     return () => ro.disconnect();
   }, []);
 
@@ -109,9 +184,11 @@ export default function DraggableOverlayEditor({
     if ("touches" in e && e.touches.length > 0) {
       return { x: e.touches[0].clientX, y: e.touches[0].clientY };
     }
+
     if ("clientX" in e) {
       return { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY };
     }
+
     return null;
   };
 
@@ -121,6 +198,7 @@ export default function DraggableOverlayEditor({
       e.stopPropagation();
 
       const rect = containerRef.current?.getBoundingClientRect();
+
       if (!rect || rect.width === 0 || rect.height === 0) return;
 
       const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
@@ -140,7 +218,7 @@ export default function DraggableOverlayEditor({
         overlayH: Number(overlay.height),
       };
     },
-    [],
+    []
   );
 
   const handleResizeStart = useCallback(
@@ -149,6 +227,7 @@ export default function DraggableOverlayEditor({
       e.stopPropagation();
 
       const rect = containerRef.current?.getBoundingClientRect();
+
       if (!rect || rect.width === 0 || rect.height === 0) return;
 
       const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
@@ -156,9 +235,6 @@ export default function DraggableOverlayEditor({
 
       setSelected(overlay.id);
 
-      // Resize deltas are in screen pixels; we need to convert them back to
-      // reference-space pixels so stored values match what StreamPlayer expects.
-      // We store this scale in containerH so the move handler can un-scale.
       resizeRef.current = {
         id: overlay.id,
         startX: clientX,
@@ -169,7 +245,7 @@ export default function DraggableOverlayEditor({
         containerH: rect.height,
       };
     },
-    [],
+    []
   );
 
   useEffect(() => {
@@ -177,6 +253,7 @@ export default function DraggableOverlayEditor({
       if ("touches" in e) e.preventDefault();
 
       const client = getClient(e);
+
       if (!client) return;
 
       const drag = dragRef.current;
@@ -199,10 +276,18 @@ export default function DraggableOverlayEditor({
         const dx = client.x - resize.startX;
         const dy = client.y - resize.startY;
 
-        // Convert screen-pixel delta back to reference-space pixels
-        const scale = resize.containerW > 0 ? REFERENCE_WIDTH / resize.containerW : 1;
-        const newW = Math.min(Math.max(resize.origW + dx * scale, 10), REFERENCE_WIDTH * 4);
-        const newH = Math.min(Math.max(resize.origH + dy * scale, 10), resize.containerH * 4 * scale);
+        const scale =
+          resize.containerW > 0 ? REFERENCE_WIDTH / resize.containerW : 1;
+
+        const newW = Math.min(
+          Math.max(resize.origW + dx * scale, 10),
+          REFERENCE_WIDTH * 4
+        );
+
+        const newH = Math.min(
+          Math.max(resize.origH + dy * scale, 10),
+          resize.containerH * 4 * scale
+        );
 
         onSizeChange(resize.id, Math.round(newW), Math.round(newH));
       }
@@ -227,178 +312,124 @@ export default function DraggableOverlayEditor({
   }, [onPositionChange, onSizeChange]);
 
   const activeOverlays = overlays.filter((o) => o.is_active);
-
-  // Scale factor: same formula as StreamPlayer uses
   const scale = containerWidth > 0 ? containerWidth / REFERENCE_WIDTH : 1;
 
   return (
     <div className="space-y-3">
-      {/* Toolbar */}
       <div className="flex items-center justify-between gap-3">
         <p className="text-amber-300/40 text-xs">
           Drag overlays on the preview below. Use the ↘ handle to resize.
           Overlay sizes are scaled to match the live player exactly.
         </p>
-        {embedUrl && (
-          <button
-            type="button"
-            onClick={() => setShowStream((v) => !v)}
-            className={`shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors ${
-              showStream
-                ? "bg-red-600/20 border-red-600/50 text-red-400"
-                : "bg-amber-950/40 border-amber-900/30 text-amber-400/70 hover:text-white"
-            }`}
-          >
-            {showStream ? "▶ Stream ON" : "▶ Stream OFF"}
-          </button>
-        )}
+
+        <button
+          type="button"
+          onClick={() => setShowStream((v) => !v)}
+          className="text-xs px-3 py-1.5 rounded-lg border border-zinc-700 text-zinc-300 hover:border-zinc-500"
+        >
+          {showStream ? "Hide Stream Preview" : "Show Stream Preview"}
+        </button>
       </div>
 
-      {/* Scale info */}
-      {containerWidth > 0 && (
-        <p className="text-amber-900/60 text-xs">
-          Preview scale: {Math.round(scale * 100)}% of reference (1280px). Overlays appear at the same relative size as in the live player.
-        </p>
-      )}
+      <div className="text-xs text-zinc-500">
+        Preview source:{" "}
+        <span className="text-amber-400 font-bold">
+          {isObs ? "OBS / HLS" : "YouTube"}
+        </span>
+      </div>
 
-      {/* Editor canvas */}
       <div
         ref={containerRef}
-        className="relative w-full rounded-xl overflow-hidden border border-amber-900/40"
-        style={{
-          aspectRatio: "16 / 9",
-          background: "#0d0503",
-          userSelect: "none",
-          touchAction: "none",
-          minHeight: "180px",
-        }}
-        onClick={() => setSelected(null)}
+        className="relative aspect-video w-full overflow-hidden rounded-xl border border-amber-900/30 bg-black select-none"
       >
-        {/* YouTube iframe */}
-        {embedUrl && showStream ? (
+        {showStream && isYouTube && embedUrl && (
           <iframe
             src={embedUrl}
-            title="Stream Preview"
+            title="YouTube stream preview"
             frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            style={{ position: 'absolute', top: '-5%', left: '-5%', width: '110%', height: '110%', border: 'none', pointerEvents: "none", zIndex: 1 }}
+            allow="autoplay; encrypted-media; picture-in-picture"
+            className="absolute inset-0 h-full w-full"
+            style={{
+              pointerEvents: "none",
+            }}
           />
-        ) : (
-          <div
-            className="absolute inset-0 flex items-center justify-center"
-            style={{ zIndex: 1, pointerEvents: "none" }}
-          >
-            <div className="text-center">
-              <div className="text-amber-900/50 text-5xl mb-2">▶</div>
-              <div className="text-amber-900/40 text-xs uppercase tracking-widest">
-                {embedUrl ? "Stream hidden" : "Video Preview Area"}
-              </div>
-            </div>
+        )}
+
+        {showStream && isYouTube && !embedUrl && (
+          <div className="absolute inset-0 flex items-center justify-center text-sm text-amber-300/40">
+            Invalid YouTube URL
           </div>
         )}
 
-        {/* Active overlays */}
+        {showStream && isObs && obsStreamUrl && (
+          <ObsPreview src={obsStreamUrl} />
+        )}
+
+        {showStream && isObs && !obsStreamUrl && (
+          <div className="absolute inset-0 flex items-center justify-center text-sm text-amber-300/40">
+            OBS stream URL missing
+          </div>
+        )}
+
+        {!showStream && (
+          <div className="absolute inset-0 bg-gradient-to-br from-zinc-950 to-zinc-900" />
+        )}
+
         {activeOverlays.map((overlay) => {
           const isSelected = selected === overlay.id;
-          const isActiveAd = overlay.type === "ad" && overlay.id === activeAdId;
-          const isVideoFile = /\.(mp4|webm)(\?|$)/i.test(overlay.image_url);
-
-          // Apply same scale factor as StreamPlayer so editor matches player view exactly
-          const scaledW = Math.max(Number(overlay.width) * scale, 8);
-          const scaledH = Math.max(Number(overlay.height) * scale, 8);
+          const isActiveAd = activeAdId === overlay.id;
+          const scaledWidth = Math.max(Number(overlay.width) * scale, 24);
+          const scaledHeight = Math.max(Number(overlay.height) * scale, 24);
 
           return (
             <div
               key={overlay.id}
-              className={`absolute border-2 rounded ${TYPE_COLORS[overlay.type]} ${
-                isSelected ? "shadow-[0_0_0_2px_white] border-solid" : "border-dashed"
-              } ${isActiveAd ? "ring-2 ring-orange-400" : ""}`}
+              className={`absolute group/overlay cursor-move border-2 ${
+                TYPE_COLORS[overlay.type]
+              } ${
+                isSelected ? "ring-2 ring-white/70" : ""
+              } ${isActiveAd ? "shadow-[0_0_25px_rgba(251,146,60,0.8)]" : ""}`}
               style={{
-                left: `${Number(overlay.pos_x)}%`,
-                top: `${Number(overlay.pos_y)}%`,
-                width: `${scaledW}px`,
-                height: `${scaledH}px`,
-                opacity: Number(overlay.opacity),
-                zIndex: isSelected ? 30 : 20,
-                cursor: "grab",
-                touchAction: "none",
-                userSelect: "none",
+                left: `${overlay.pos_x}%`,
+                top: `${overlay.pos_y}%`,
+                width: scaledWidth,
+                height: scaledHeight,
+                opacity: overlay.opacity,
               }}
               onMouseDown={(e) => handleDragStart(e, overlay)}
               onTouchStart={(e) => handleDragStart(e, overlay)}
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelected(overlay.id);
-              }}
             >
-              {isVideoFile ? (
+              {isVideo(overlay.image_url) ? (
                 <video
                   src={overlay.image_url}
-                  className="w-full h-full object-contain"
-                  style={{ pointerEvents: "none" }}
+                  autoPlay
                   muted
                   loop
-                  autoPlay
                   playsInline
-                  draggable={false}
+                  className="h-full w-full object-contain pointer-events-none"
                 />
               ) : (
                 <img
                   src={overlay.image_url}
                   alt={overlay.type}
-                  className="w-full h-full object-contain"
-                  style={{ pointerEvents: "none" }}
+                  className="h-full w-full object-contain pointer-events-none"
                   draggable={false}
                 />
               )}
 
-              {/* Label */}
-              <div
-                className="absolute -top-6 left-0 text-xs bg-black/90 px-2 py-0.5 rounded text-white whitespace-nowrap border border-amber-900/40"
-                style={{ pointerEvents: "none" }}
-              >
-                {TYPE_LABELS[overlay.type]}
-                {isActiveAd ? " 🔴 LIVE" : ""}
+              <div className="absolute -top-6 left-0 whitespace-nowrap rounded bg-black/80 px-2 py-0.5 text-[10px] font-bold text-white">
+                {TYPE_LABELS[overlay.type]} #{overlay.id}
               </div>
 
-              {/* Resize handle */}
               <div
-                className="absolute bottom-0 right-0 w-5 h-5 bg-amber-500/90 rounded-tl flex items-center justify-center text-black text-xs font-bold hover:bg-amber-400 transition-colors"
-                style={{ zIndex: 31, cursor: "se-resize" }}
-                onMouseDown={(e) => {
-                  e.stopPropagation();
-                  handleResizeStart(e, overlay);
-                }}
-                onTouchStart={(e) => {
-                  e.stopPropagation();
-                  handleResizeStart(e, overlay);
-                }}
-                title="Drag to resize"
-              >
-                ↘
-              </div>
+                className="absolute -bottom-2 -right-2 h-4 w-4 cursor-se-resize rounded-sm border border-white/60 bg-amber-500"
+                onMouseDown={(e) => handleResizeStart(e, overlay)}
+                onTouchStart={(e) => handleResizeStart(e, overlay)}
+                title="Resize"
+              />
             </div>
           );
         })}
-
-        {activeOverlays.length === 0 && (
-          <div
-            className="absolute inset-0 flex items-end justify-center pb-4"
-            style={{ zIndex: 15, pointerEvents: "none" }}
-          >
-            <p className="text-amber-900/50 text-xs bg-black/60 px-3 py-1 rounded-full">
-              No active overlays — add one below
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Legend */}
-      <div className="flex gap-4 text-xs text-amber-300/40">
-        <span><span className="text-blue-400 font-bold">—</span> Logo</span>
-        <span><span className="text-orange-400 font-bold">—</span> Ad</span>
-        <span><span className="text-purple-400 font-bold">—</span> Banner</span>
-        {activeAdId && <span className="text-orange-400 font-bold animate-pulse">● Ad is live</span>}
       </div>
     </div>
   );

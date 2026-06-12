@@ -30,6 +30,7 @@ export default function NewNews() {
 
   const [form, setForm] = useState({
     title: "",
+    newsbf: "",
     position: "left", 
     image_url: "",
     target_url: "",
