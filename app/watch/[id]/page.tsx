@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { notFound } from "next/navigation";
 import pool from "@/lib/db";
 import StreamPlayer from "@/components/StreamPlayer";
@@ -76,7 +79,7 @@ async function getNewsData() {
   const streamId = 1;
    const neswRes = await pool.query(
     `SELECT id, title, sport_type, youtube_url, team1, team2, scheduled_at, is_live, is_active, ad_active, active_overlay_id
-     FROM streams WHERE is_live = $1`,
+     FROM streams WHERE is_live = 1`,
     [streamId]
   );
 
@@ -102,8 +105,10 @@ async function getNewsTopData() {
     return newsRes.rows[0];
   */
   const newsRes = await pool.query(
-      `SELECT STRING_AGG(newsbf, ' • ') as combined_news FROM news WHERE is_live = true`
-    );
+  `SELECT STRING_AGG(newsbf, ' • ' ORDER BY created_at DESC) as combined_news
+   FROM news
+   WHERE is_live = true AND is_active = true`
+);
 
    
 
@@ -127,11 +132,12 @@ async function getNewsTopData() {
   async function getBannerData() {
    try {
     // 1. Fetch all columns needed for the banner object
-    const bannersRes = await pool.query(
-      `SELECT id, image_url as img, target_url as link, position 
-       FROM banner 
-       WHERE is_live = true AND is_active = true`
-    );
+const bannersRes = await pool.query(
+  `SELECT id, image_url as img, target_url as link, position
+   FROM banner
+   WHERE is_live = true AND is_active = true
+   ORDER BY id ASC`
+);
 
     // 2. Initialize the structure
   const homeBanners: { left: Banner[]; right: Banner[] } = { left: [], right: [] };
@@ -242,7 +248,7 @@ function StatusScreen({ type, title, scheduledAt }: {
 export default async function WatchPage({ params }: Props) {
   const { id } = await params;
   const data = await getStreamData(id);
-  const datanws = await getNewsData();
+  // const datanws = await getNewsData();
   if (!data) notFound();
 
   const { stream, overlays } = data;

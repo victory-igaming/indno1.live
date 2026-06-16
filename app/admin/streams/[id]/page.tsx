@@ -46,6 +46,11 @@ interface Stream {
 const SPORTS = ["cricket", "football", "basketball", "tennis", "other"];
 const OVERLAY_TYPES = ["logo", "ad", "banner"];
 
+// const DEFAULT_OBS_URL = "http://localhost:8090/hls/demo123.m3u8";
+const DEFAULT_OBS_URL = "https://hls.indno1.live/hls/live123.m3u8";
+ 
+const DEFAULT_YOUTUBE_URL = "https://www.youtube.com/watch?v=RCw7y0z6eRY";
+
 export default function EditStream({
   params,
 }: {
@@ -108,10 +113,10 @@ export default function EditStream({
       setStream({
         ...streamData.stream,
         source_type: streamData.stream?.source_type || "youtube",
-        youtube_url: streamData.stream?.youtube_url || "",
+        youtube_url: streamData.stream?.youtube_url || DEFAULT_YOUTUBE_URL,
         obs_stream_url:
           streamData.stream?.obs_stream_url ||
-          "http://localhost:8090/live/stream.m3u8",
+          DEFAULT_OBS_URL,
       });
 
       if (overlaysRes.ok) {
@@ -146,12 +151,12 @@ export default function EditStream({
 
   const nextYoutubeUrl =
     nextSourceType === "youtube"
-      ? stream.youtube_url || "https://www.youtube.com/watch?v=YOffcnqjNAM"
+      ? stream.youtube_url || DEFAULT_YOUTUBE_URL
       : null;
 
   const nextObsStreamUrl =
     nextSourceType === "obs"
-      ? stream.obs_stream_url || "http://localhost:8090/hls/demo123.m3u8"
+      ? stream.obs_stream_url || DEFAULT_OBS_URL
       : null;
 
   const nextStream = {
@@ -192,9 +197,9 @@ export default function EditStream({
     setStream({
       ...data.stream,
       source_type: data.stream.source_type || "youtube",
-      youtube_url: data.stream.youtube_url || "",
+      youtube_url: data.stream.youtube_url || DEFAULT_YOUTUBE_URL,
       obs_stream_url:
-        data.stream.obs_stream_url || "http://localhost:8090/hls/demo123.m3u8",
+        data.stream.obs_stream_url || DEFAULT_OBS_URL,
     });
 
     setSuccess(
@@ -232,12 +237,12 @@ export default function EditStream({
 
     youtube_url:
       finalSourceType === "youtube"
-        ? stream.youtube_url || "https://www.youtube.com/watch?v=YOffcnqjNAM"
+        ? stream.youtube_url || DEFAULT_YOUTUBE_URL
         : null,
 
     obs_stream_url:
       finalSourceType === "obs"
-        ? stream.obs_stream_url || "http://localhost:8090/hls/demo123.m3u8"
+        ? stream.obs_stream_url || DEFAULT_OBS_URL
         : null,
 
     team1: stream.team1 || null,
@@ -266,9 +271,9 @@ export default function EditStream({
     setStream({
       ...data.stream,
       source_type: data.stream.source_type || "youtube",
-      youtube_url: data.stream.youtube_url || "",
+      youtube_url: data.stream.youtube_url || DEFAULT_YOUTUBE_URL,
       obs_stream_url:
-        data.stream.obs_stream_url || "http://localhost:8090/hls/demo123.m3u8",
+        data.stream.obs_stream_url || DEFAULT_OBS_URL,
     });
 
     setSuccess("Saved!");
@@ -585,7 +590,7 @@ export default function EditStream({
       ...stream,
       source_type: "youtube",
       youtube_url:
-        stream.youtube_url || "https://www.youtube.com/watch?v=YOffcnqjNAM",
+        stream.youtube_url || DEFAULT_YOUTUBE_URL,
       obs_stream_url: null,
     })
   }
@@ -606,7 +611,7 @@ export default function EditStream({
       source_type: "obs",
       youtube_url: null,
       obs_stream_url:
-        stream.obs_stream_url || "http://localhost:8090/hls/demo123.m3u8",
+        stream.obs_stream_url || DEFAULT_OBS_URL,
     })
   }
   className={`py-3 rounded-lg text-sm font-bold border transition-colors ${
@@ -661,14 +666,14 @@ export default function EditStream({
                 }
                 required={stream.source_type === "obs"}
                 className="w-full rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none admndsb_editstrm_forminput"
-                placeholder="http://62.171.169.111:8090/live/stream.m3u8"
+                placeholder={DEFAULT_OBS_URL}
                 style={{
                   background: "rgba(0,0,0,0.35)",
                   border: "1px solid rgba(180,83,9,0.3)",
                 }}
               />
               <p className="text-amber-300/30 text-xs mt-1">
-                Local test URL: http://62.171.169.111:8090/live/stream.m3u8
+                Local test URL: {DEFAULT_OBS_URL}
               </p>
             </div>
           )}

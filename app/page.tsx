@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { Suspense } from "react";
 import HomeLivePlayer from "@/components/HomeLivePlayer";
 import TrandingGame from '@/components/TrandingGame';
@@ -74,10 +77,11 @@ async function getNewsData() {
    try {
     // 1. Fetch all columns needed for the banner object
     const bannersRes = await pool.query(
-      `SELECT id, image_url as img, target_url as link, position 
-       FROM banner 
-       WHERE is_live = true AND is_active = true`
-    );
+  `SELECT id, image_url as img, target_url as link, position
+   FROM banner
+   WHERE is_live = true AND is_active = true
+   ORDER BY id ASC`
+);
 
     // 2. Initialize the structure
     // const homeBanners = {

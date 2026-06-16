@@ -62,43 +62,46 @@ export default function EditNews({
     loadData();
   }, [id, router]);
 
-  
   async function loadData() {
   setLoading(true);
+  setError("");
+
   try {
     const res = await fetch(`/api/admin/news/${id}`);
-
-    if (!res.ok) {
-      router.push("/admin");
-      return;
-    }
 
     const newsData = await res.json();
     console.log("Fetched Data:", newsData);
 
+    if (!res.ok) {
+      setError(newsData.error || "Failed to load news data");
+      return;
+    }
 
-    // Check if newsData.news exists and has at least one item
-    if (newsData.news && newsData.news.length > 0) {
+    let item = null;
 
-      const item = newsData.news[0]; // This is where your 'test' data lives
+    if (Array.isArray(newsData.news)) {
+      item = newsData.news[0];
+    } else if (newsData.news) {
+      item = newsData.news;
+    } else {
+      item = newsData;
+    }
 
-        // The log shows newsData IS the object, so set it directly
+    if (!item || !item.id) {
+      setError("News item not found in the database.");
+      return;
+    }
+
     setForm({
       title: item.title || "",
       newsbf: item.newsbf || "",
       scheduled_at: item.scheduled_at || "",
-      is_live: item.is_live || false,
-      is_active: item.is_active || false,
-      ad_active: item.ad_active || false,
+      is_live: item.is_live ?? false,
+      is_active: item.is_active ?? true,
+      ad_active: item.ad_active ?? false,
     });
-    
-    
-    } else {
-      setError("News item not found in the database.");
-    }
-    
-  
   } catch (err) {
+    console.error("Failed to load news:", err);
     setError("Failed to load news data");
   } finally {
     setLoading(false);

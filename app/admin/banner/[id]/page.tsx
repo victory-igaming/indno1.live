@@ -68,46 +68,49 @@ export default function EditNews({
     loadData();
   }, [id, router]);
 
-  
-  async function loadData() {
+ async function loadData() {
   setLoading(true);
+  setError("");
+
   try {
     const res = await fetch(`/api/admin/banner/${id}`);
 
+    const bnersData = await res.json();
+    console.log("Fetched Banner Data:", bnersData);
+
     if (!res.ok) {
-      router.push("/admin");
+      setError(bnersData.error || "Failed to load banner data");
       return;
     }
 
-    const bnersData = await res.json();
-    console.log("Fetched Data:", bnersData);
+    let item = null;
 
+    if (Array.isArray(bnersData.banner)) {
+      item = bnersData.banner[0];
+    } else if (bnersData.banner) {
+      item = bnersData.banner;
+    } else {
+      item = bnersData;
+    }
 
-    // Check if newsData.news exists and has at least one item
-    if (bnersData.banner && bnersData.banner.length > 0) {
+    if (!item || !item.id) {
+      setError("Banner item not found in the database.");
+      return;
+    }
 
-      const item = bnersData.banner[0]; // This is where your 'test' data lives
-
-        // The log shows newsData IS the object, so set it directly
     setForm({
       title: item.title || "",
       position: item.position || "left",
       image_url: item.image_url || "",
       target_url: item.target_url || "",
       scheduled_at: item.scheduled_at || "",
-      is_live: item.is_live || false,
-      is_active: item.is_active || false,
-      ad_active: item.ad_active || false,
+      is_live: item.is_live ?? false,
+      is_active: item.is_active ?? true,
+      ad_active: item.ad_active ?? false,
     });
-    
-    
-    } else {
-      setError("Banner item not found in the database.");
-    }
-    
-  
   } catch (err) {
-    setError("Failed to load Banner data");
+    console.error("Failed to load banner:", err);
+    setError("Failed to load banner data");
   } finally {
     setLoading(false);
   }
